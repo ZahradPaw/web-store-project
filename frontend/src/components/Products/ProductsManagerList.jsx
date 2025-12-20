@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getProducts } from '../../endpoints/api';
 import ErrorRetryComponent from '../ErrorRetryComponent';
 import LoadingComponent from '../LoadingComponent';
+import SearchBar from '../SearchBar';
 import './Products.css';
 
 // Компонент списка товаров для управления ими
@@ -49,6 +50,10 @@ const ProductsManagerList = () => {
     return units[unit] || unit;
   };
 
+  const onSearch = (filter) => {
+    console.log(filter); 
+  }
+
   // Контент при загрузке
   if (loading) {
    return (
@@ -87,6 +92,8 @@ const ProductsManagerList = () => {
           Добавить товар
         </button>
       </div>
+
+      <SearchBar onSearch={onSearch} />
 
       {products.length === 0 ? (
         <div className="text-center py-5 empty-products">

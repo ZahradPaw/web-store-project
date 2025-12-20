@@ -4,8 +4,6 @@ import { register } from '../../endpoints/api';
 import ErrorComponent from '../ErrorComponent';
 import './Auth.css';
 
-// ПЕРЕДЕЛАТЬ ПОД ДРУГОЙ СТИЛЬ
-
 // Форма регистрации клиентов для неавторизованных
 const RegisterForm = () => {
   const navigate = useNavigate();
@@ -18,6 +16,7 @@ const RegisterForm = () => {
     first_name: '',
     last_name: '',
     phone: '',
+    date_of_birth: '',
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);

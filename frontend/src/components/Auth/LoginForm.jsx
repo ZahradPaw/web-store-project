@@ -22,10 +22,12 @@ const LoginForm = ({ onSuccess }) => {
 
     const result = await userLogin(credentials);
 
-    if (result.success)
+    if (result.success) {
       onSuccess?.();
-    else
+    }
+    else {
       setError(result.error);
+    }
     setLoading(false);
   }
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useAuthContext } from '../contexts/AuthContext';
 import UserInfo from '../components/Profile/UserInfo';
 import ClientStats from '../components/Profile/ClientStats';
