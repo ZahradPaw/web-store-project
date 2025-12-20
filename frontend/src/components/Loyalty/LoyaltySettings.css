@@ -1,0 +1,19 @@
+.loyalty-explanation .alert {
+  border: none;
+  border-radius: 8px;
+}
+
+.loyalty-explanation ul {
+  margin-bottom: 0;
+}
+
+.loyalty-explanation li {
+  margin-bottom: 0.25rem;
+}
+
+.current-settings {
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid var(--accent-color);
+}

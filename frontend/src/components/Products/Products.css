@@ -1,0 +1,205 @@
+.product-card {
+  border: none;
+  border-radius: 15px;
+  overflow: hidden;
+  transition: var(--transition);
+  background: white;
+  height: 100%;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.product-image {
+  height: 200px;
+  background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+  cursor: pointer;
+}
+
+.product-image i {
+  font-size: 3rem;
+  opacity: 0.7;
+}
+
+.product-title {
+  color: black;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.product-badge {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 20px;
+}
+
+.product-price {
+  color: var(--accent-color);
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.product-stock {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.quantity-input {
+  width: 80px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.add-to-cart-btn {
+  width: 100px;
+  border-radius: 8px;
+  font-size: 600;
+  transition: var(--transition);
+  background: linear-gradient(45deg, var(--success-color), #2ecc71);
+  border: none;
+}
+
+.add-to-cart-btn i {
+  font-size: 20px;
+}
+
+.add-to-cart-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(39, 174, 96, 0.3);
+}
+
+.add-to-cart-btn:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+.products-manager {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-title {
+  color: var(--primary-color);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.empty-products {
+  padding: 4rem 0;
+}
+
+.empty-products i {
+  opacity: 0.5;
+}
+
+/* Стили таблицы с продуктами */
+.products-table-container {
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.table {
+  margin-bottom: 0px;
+}
+
+.products-table thead th {
+  border-bottom: 2px solid #dee2e6;
+  font-weight: 600;
+  padding: 0.5rem;
+}
+
+.products-table tbody td {
+  padding: 0.5rem;
+  vertical-align: middle;
+}
+
+.product-row:hover {
+  background-color: #f8f9fa;
+}
+
+.product-name {
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 0.25rem;
+}
+
+.product-description {
+  font-size: 0.875rem;
+  color: #6c757d;
+  line-height: 1.4;
+}
+
+.product-price {
+  font-weight: 600;
+  color: var(--accent-color);
+  font-size: 1.1rem;
+}
+
+.product-unit {
+  color: var(--secondary-color);
+  font-weight: 500;
+}
+
+/* Стили формы продукта */
+.product-form-container {
+  margin: 0 auto;
+  max-width: 1000px;
+}
+
+.product-form-container .card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.product-form-container .card-header {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  border-radius: 12px 12px 0 0 !important;
+  border: none;
+  padding: 1.25rem 1.5rem;
+}
+
+.product-form-container .card-title {
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin-bottom: 0;
+}
+
+.product-form-container .form-label {
+  font-weight: 600;
+  color: var(--secondary-color);
+  margin-bottom: 0.5rem;
+}
+
+.product-form-container .form-control,
+.product-form-container .form-select {
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  padding: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.product-form-container .form-control:focus,
+.product-form-container .form-select:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+.product-form-container .is-invalid {
+  border-color: var(--danger-color);
+}
+
+.product-form-container .invalid-feedback {
+  display: block;
+}

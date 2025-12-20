@@ -1,0 +1,42 @@
+# Файлы IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Временные файлы
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Логи и базы данных
+*.log
+*.sqlite
+*.db
+
+# Виртуальное окружение
+venv/
+env/
+.venv/
+
+# Файлы сборки и дистрибуции
+build/
+dist/
+*.egg-info/
+*.egg
+*.whl
+*.spec
+
+# Файлы кэша и тестов
+.pytest_cache/
+.cache/
+.coverage
+htmlcov/
+
+# Файлы настроек и среды
+.env
+.venv
+.env.local
+.env.development
+.env.test
+.env.production

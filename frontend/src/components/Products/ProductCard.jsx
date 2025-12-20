@@ -1,0 +1,102 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuthContext } from '../../contexts/AuthContext';
+import './Products.css';
+
+// Компонент карточки товара на станице с товарами
+const ProductCard = ({ product, onAddToCart }) => {
+  const [quantity, setQuantity] = useState(1);
+  const { isAuthenticated } = useAuthContext();
+  const navigate = useNavigate();
+
+  // Добавление товара в корзину
+  const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      // Перенаправление на страницу входа, если не авторизован
+      navigate('/login');
+    }
+    if (parseFloat(quantity) > 0 && parseFloat(quantity) <= parseFloat(product.quantity)) {
+      onAddToCart(product, quantity);
+      setQuantity(1);
+    }
+  };
+
+  // Отображение единиц измерения
+  const getUnitDisplay = (unit) => {
+    const units = {
+      'pieces': 'шт',
+      'kg': 'кг',
+      'liter': 'л'
+    };
+    return units[unit] || unit;
+  };
+
+  // Перенаправление на страницу товара при нажатии на карточку
+  const handleProductClick = () => {
+    console.log(product.id);
+    navigate(`/product/${product.id}`);
+  };
+
+  return (
+    <div className="card product-card">
+      {/* Заглушка для картинки */}
+      <div className="product-image" onClick={handleProductClick}>
+        <i className="bi bi-image"></i>
+      </div>
+
+      <div className="card-body d-flex flex-column">
+        <h5 className="product-title">{product.name}</h5>
+        <div className="mb-2">
+          <span className="badge bg-secondary product-badge">
+            {getUnitDisplay(product.unit)}
+          </span>
+          {product.is_available && (
+            <span className="badge bg-success product-badge ms-1">В наличии</span>
+          )}
+        </div>
+
+        <p className="card-text text-muted small flex-grow-1">
+          {product.description || 'Описание товара отсутствует'}
+        </p>
+
+        <div className="mt-auto">
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <span className="product-price">
+              {parseFloat(product.price).toFixed(2)} ₽
+            </span>
+            <small className="product-stock">
+              В наличии: {parseFloat(product.quantity)} {getUnitDisplay(product.unit)}
+            </small>
+          </div>
+
+          {product.quantity > 0 ? (
+            <div className="d-flex gap-2">
+              <input
+                type="number"
+                className="form-control quantity-input"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+                max={product.unit === 'pieces' ? Math.floor(product.quantity) : product.quantity}
+                min={product.unit === 'pieces' ? '1' : '0.1'}
+                step={product.unit === 'pieces' ? '1' : '0.1'}
+              />
+              <button
+                className="btn add-to-cart-btn text-white btn-sm flex-grow-1"
+                onClick={handleAddToCart}
+                disabled={parseFloat(quantity) > parseFloat(product.quantity)}
+              >
+                <i className="bi bi-cart-plus"></i>
+              </button>
+            </div>
+          ) : (
+            <button className="btn btn-outline-secondary btn-sm w-100" disabled>
+              Нет в наличии
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ProductCard;

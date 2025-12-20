@@ -1,0 +1,67 @@
+.header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-container {
+  margin: 0 auto;
+  padding: 0 50px;
+}
+
+.logo {
+  color: white;
+  font-size: 30px;
+  padding: 8px 8px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.nav-link {
+  color: var(--light-color) !important;
+  text-decoration: none;
+  padding: 8px;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+  font-weight: 500;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--warning-color) !important;
+}
+
+.user-greeting {
+  color: var(--light-color);
+  font-size: 0.9rem;
+}
+
+.log-button {
+  border: 1px solid var(--light-color);
+  color: var(--light-color);
+  transition: var(--transition);
+}
+
+.log-button:hover {
+  background-color: var(--light-color);
+  color: var(--light-color);
+  transform: translateY(-1px);
+}
+
+.cart-badge {
+  background-color: var(--danger-color);
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  margin-left: 4px;
+  position: relative;
+  top: -1px;
+}
+
+.nav-link {
+  position: relative;
+}
