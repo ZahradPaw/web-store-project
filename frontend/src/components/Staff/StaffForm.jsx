@@ -331,7 +331,7 @@ const StaffForm = ({ staff }) => {
                   onChange={handleChange}
                 >
                   <option value="salesperson">Продавец</option>
-                  <option value="manager">Товаровед</option>
+                  <option value="merchandiser">Товаровед</option>
                   <option value="account_manager">Клиент-менеджер</option>
                   <option value="admin">Администратор</option>
                 </select>

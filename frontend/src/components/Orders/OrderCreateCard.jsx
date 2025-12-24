@@ -90,11 +90,9 @@ const OrderCreateCard = ({ onSubmit }) => {
         quantity: item.quantity
       }))
     };
-    console.log(orderData); 
 
     // Отправка запроса на создание заказа
     const result = await createOrder(orderData);
-    console.log(result);
 
     if (result.success) {
       onSubmit(result.data);

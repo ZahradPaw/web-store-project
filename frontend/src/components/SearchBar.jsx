@@ -5,30 +5,13 @@ import './SearchBar.css';
 const SearchBar = ({
   placeholder = 'Поиск...',
   onSearch,
-  delay = 300,
   initialValue = '',
 }) => {
   const [searchTerm, setSearchTerm] = useState(initialValue);
-  const [isTyping, setIsTyping] = useState(false);
-
-  useEffect(() => {
-    if (!searchTerm.trim() && initialValue === '') {
-      onSearch('');
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      onSearch(searchTerm);
-      setIsTyping(false);
-    }, delay);
-
-    return () => clearTimeout(timer);
-  }, [searchTerm, delay, onSearch, initialValue]);
   
   const handleChange = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
-    setIsTyping(true);
   };
 
   const handleClear = () => {
@@ -39,7 +22,6 @@ const SearchBar = ({
   const handleSubmit = (e) => {
     e.preventDefault();
     onSearch(searchTerm);
-    setIsTyping(false);
   };
 
   return (
@@ -71,18 +53,11 @@ const SearchBar = ({
             <i className="bi bi-x"></i>
           </button>
         )}
-        
-        {isTyping && (
-          <div className="typing-indicator">
-            <div className="spinner"></div>
-          </div>
-        )}
       </div>
       
       <button
         type="submit"
         className="search-button"
-        disabled={isTyping}
       >
         Найти
       </button>

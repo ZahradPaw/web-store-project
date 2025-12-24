@@ -9,8 +9,8 @@ const OrderCard = ({ order }) => {
   // Значок статуса заказа
   const getStatusBadge = (status) => {
     const statusConfig = {
-      'pending': { class: 'warning', text: 'Ожидание' },
-      'confirmed': { class: 'info', text: 'Подтвержден' },
+      'created': { class: 'warning', text: 'Оформлен' },
+      'paid': { class: 'info', text: 'Оплачен' },
       'delivered': { class: 'success', text: 'Доставлен' },
       'cancelled': { class: 'danger', text: 'Отменен' }
     };
@@ -22,8 +22,8 @@ const OrderCard = ({ order }) => {
   // Текст статуса доставки
   const getStatusText = (status) => {
     const statusConfig = {
-      'pending': 'Ожидание подтверждения',
-      'confirmed': 'Подтвержден',
+      'created': 'Оформлен',
+      'paid': 'Оплачен',
       'delivered': 'Доставлен',
       'cancelled': 'Отменен'
     };

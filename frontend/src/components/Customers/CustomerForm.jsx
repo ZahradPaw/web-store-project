@@ -136,6 +136,42 @@ const CustomerForm = () => {
               </div>
 
               <div className="mb-3">
+                <label htmlFor="password" className="form-label">
+                  Пароль *
+                </label>
+                <input
+                  type="password"
+                  className={`form-control ${errors.password ? 'is-invalid' : ''}`}
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Минимум 6 символов"
+                />
+                {errors.password && (
+                  <div className="invalid-feedback">{errors.password}</div>
+                )}
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="password2" className="form-label">
+                  Подтверждение пароля *
+                </label>
+                <input
+                  type="password"
+                  className={`form-control ${errors.password2 ? 'is-invalid' : ''}`}
+                  id="password2"
+                  name="password2"
+                  value={formData.password2}
+                  onChange={handleChange}
+                  placeholder="Повторите пароль"
+                />
+                {errors.password2 && (
+                  <div className="invalid-feedback">{errors.password2}</div>
+                )}
+              </div>
+
+              <div className="mb-3">
                 <label htmlFor="email" className="form-label">
                   Email *
                 </label>
@@ -223,42 +259,6 @@ const CustomerForm = () => {
                 )}
               </div>
             </div>
-
-            <div className="mb-3">
-                <label htmlFor="password" className="form-label">
-                  Пароль *
-                </label>
-                <input
-                  type="password"
-                  className={`form-control ${errors.password ? 'is-invalid' : ''}`}
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Минимум 6 символов"
-                />
-                {errors.password && (
-                  <div className="invalid-feedback">{errors.password}</div>
-                )}
-              </div>
-
-              <div className="mb-3">
-                <label htmlFor="password2" className="form-label">
-                  Подтверждение пароля *
-                </label>
-                <input
-                  type="password"
-                  className={`form-control ${errors.password2 ? 'is-invalid' : ''}`}
-                  id="password2"
-                  name="password2"
-                  value={formData.password2}
-                  onChange={handleChange}
-                  placeholder="Повторите пароль"
-                />
-                {errors.password2 && (
-                  <div className="invalid-feedback">{errors.password2}</div>
-                )}
-              </div>
 
             <div className="d-flex gap-2">
               <button

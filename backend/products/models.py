@@ -10,10 +10,11 @@ class Product(models.Model):
         KG = "kg", "килограммы"
         LITER = "liter", "литры"
 
-    name = models.CharField(max_length=255, verbose_name="Наименование товара")
+    name = models.CharField(max_length=255, verbose_name="Наименование")
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Цена")
     unit = models.CharField(max_length=10, choices=Unit.choices, verbose_name="Единица измерения")
     quantity = models.DecimalField(max_digits=10, decimal_places=3, default=0, verbose_name="Количество на складе")
+    description = models.TextField(max_length=2000, blank=True, verbose_name="Описание")
 
     objects = models.Manager()
 

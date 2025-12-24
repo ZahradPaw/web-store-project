@@ -28,7 +28,7 @@ const Navigation = () => {
       'merchandiser': 'Товаровед',
       'account_manager': 'Клиент-менеджер',
       'salesperson': 'Продавец',
-      'client': 'Клиент'
+      'client': 'Покупатель'
     };
     return roles[role] || role;
   };

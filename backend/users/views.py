@@ -11,6 +11,16 @@ class UserListView(generics.ListAPIView):
     serializer_class = UserListSerializer
     permission_classes = (IsStaffUser,)
 
+    def get_queryset(self):
+        # Получение пользователей, содержащих указанные символы через параметр name
+        name = self.request.query_params.get('name')
+        # Получение пользователей по роли через параметр role
+        role = self.request.query_params.get('role')
+
+        if role:
+            return User.objects.filter(first_name__icontains=name, role=role)
+        return User.objects.filter(first_name__icontains=name)
+
 
 class UserProfileView(generics.RetrieveAPIView):
     """Профиль пользователя"""

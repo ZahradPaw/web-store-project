@@ -13,18 +13,28 @@ class OrderViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated, IsStaffOrReadOnlyDetail,)
 
     def get_queryset(self):
+        # По-умолчанию заказы получаются в обратном порядке номеров
         user = self.request.user
 
         # Админы и продавцы видят все заказы
         if user.role in [user.Roles.ADMIN, user.Roles.SALESPERSON]:
             # ID клиента из параметров запроса
-            client_id = self.request.query_params.get('client')
+            client_id = self.request.query_params.get('client_id')
+            # Параметр фильтрации заказов по имени клиента
+            client_name = self.request.query_params.get('client_name')
+
+            if client_name:
+                return Order.objects.filter(client__first_name=client_name).prefetch_related(
+                    'items', 'items__product').order_by('-pk')
             if client_id is None:
-                return Order.objects.all().prefetch_related('items', 'items__product')
-            return Order.objects.filter(client=client_id).prefetch_related('items', 'items__product')
+                return Order.objects.all().prefetch_related(
+                    'items', 'items__product').order_by('-pk')
+            return Order.objects.filter(client=client_id).prefetch_related(
+                'items', 'items__product').order_by('-pk')
 
         # Клиенты видят только свои заказы
-        return Order.objects.filter(client=user).prefetch_related('items', 'items__product')
+        return Order.objects.filter(client=user).prefetch_related(
+            'items', 'items__product').order_by('-pk')
 
     def perform_create(self, serializer):
         """Только клиенты и продавцы могут создавать заказы"""
@@ -43,8 +53,8 @@ class OrderViewSet(viewsets.ModelViewSet):
         """Отмена заказа"""
         order = self.get_object()
 
-        # Проверяем можно ли отменить заказ
-        if not order.can_be_cancelled:
+        # Заказ можно отменить, когда он только оформлен
+        if order.status != order.Status.CREATED:
             return Response(
                 {"detail": "Невозможно отменить заказ в текущем статусе"},
                 status=status.HTTP_400_BAD_REQUEST
@@ -66,8 +76,8 @@ class OrderViewSet(viewsets.ModelViewSet):
         })
 
     @action(detail=True, methods=['get'])
-    def mark_confirmed(self, request, pk=None):
-        """Отметить заказ как подтвержденный"""
+    def mark_paid(self, request, pk=None):
+        """Отметить заказ как оплаченный"""
         user = request.user
 
         if user.role not in [user.Roles.SALESPERSON, user.Roles.ADMIN]:
@@ -78,8 +88,8 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         order = self.get_object()
 
-        # Изменение статуса на "подтвержден"
-        order.status = Order.Status.CONFIRMED
+        # Изменение статуса на "оплачен"
+        order.status = Order.Status.PAID
         order.save()
 
         # Добавление суммы покупки в статистику клиента
@@ -103,6 +113,13 @@ class OrderViewSet(viewsets.ModelViewSet):
             )
 
         order = self.get_object()
+
+        # Заказ можно отметить доставленным, когда он только оплачен
+        if order.status != order.Status.PAID:
+            return Response(
+                {"detail": "Невозможно отметить заказ, как доставленный, пока он не оплачен"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         # Изменение статуса на "доставлен"
         order.status = Order.Status.DELIVERED

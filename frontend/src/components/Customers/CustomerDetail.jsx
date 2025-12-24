@@ -43,8 +43,8 @@ const CustomerDetail = ({ customer }) => {
   // Статус заказа
   const getStatusBadge = (status) => {
     const statusConfig = {
-      'pending': 'warning',
-      'confirmed': 'info',
+      'created': 'warning',
+      'paid': 'info',
       'delivered': 'success',
       'cancelled': 'danger'
     };
@@ -54,8 +54,8 @@ const CustomerDetail = ({ customer }) => {
   // Текст статуса доставки
   const getStatusText = (status) => {
     const statusConfig = {
-      'pending': 'Ожидание подтверждения',
-      'confirmed': 'Подтвержден',
+      'created': 'Оформлен',
+      'paid': 'Оплачен',
       'delivered': 'Доставлен',
       'cancelled': 'Отменен'
     };

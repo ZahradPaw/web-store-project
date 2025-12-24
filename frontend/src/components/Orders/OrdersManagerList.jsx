@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { getOrders } from '../../endpoints/api';
 import LoadingComponent from '../LoadingComponent';
 import ErrorRetryComponent from '../ErrorRetryComponent';
+import SearchBar from '../SearchBar';
 import './Orders.css';
 
 // Компонент списка заказов для продавца
 const OrdersManagerList = () => {
   const [orders, setOrders] = useState([]);
+  const [customers_filter, setCustomersFilter] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -15,8 +17,8 @@ const OrdersManagerList = () => {
   // Значок статуса заказа
   const getStatusBadge = (status) => {
     const statusConfig = {
-      'pending': { class: 'warning', text: 'Ожидание' },
-      'confirmed': { class: 'info', text: 'Подтвержден' },
+      'created': { class: 'warning', text: 'Оформлен' },
+      'paid': { class: 'info', text: 'Оплачен' },
       'delivered': { class: 'success', text: 'Доставлен' },
       'cancelled': { class: 'danger', text: 'Отменен' }
     };
@@ -28,8 +30,8 @@ const OrdersManagerList = () => {
   // Текст статуса доставки
   const getStatusText = (status) => {
     const statusConfig = {
-      'pending': 'Ожидание подтверждения',
-      'confirmed': 'Подтвержден',
+      'created': 'Оформлен',
+      'paid': 'Оплачен',
       'delivered': 'Доставлен',
       'cancelled': 'Отменен'
     };
@@ -39,14 +41,14 @@ const OrdersManagerList = () => {
 
   useEffect(() => {
     loadOrders();
-  }, []);
+  }, [customers_filter]);
 
   // Загрузка заказов
   const loadOrders = async () => {
     setLoading(true);
     setError('');
 
-    const result = await getOrders();
+    const result = await getOrders(customers_filter);
     
     if (result.success) {
       setOrders(result.data.results);
@@ -61,38 +63,35 @@ const OrdersManagerList = () => {
     navigate(`/orders/detail/${order.id}`);
   };
 
-  // Контент при загрузке
-  if (loading) {
-   return (
-      <div>
-        <LoadingComponent text={'Загрузка товаров...'} />
-      </div>
-    );
+  // Фильтр поиска заказов по имени клиента
+  const onSearch = (filter) => {
+    setCustomersFilter(filter); 
   }
 
-  // Контент при ошибке
-  if (error) {
-    return (
-      <div>
-        <ErrorRetryComponent 
-          error={error}
-          onClick={loadOrders}
-        />
-      </div>
-    );
-  }
+  const loadingContent = (
+    <div>
+      <LoadingComponent text={'Загрузка заказов...'} />
+    </div>
+  );
 
-  return (
-    <div className="sales-container">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h2 className="page-title">Заказы</h2>
-          <p className="text-muted">
-            Всего заказов: {orders.length}
-          </p>
-        </div>
-      </div>
+  const errorContent = (
+    <div>
+      <ErrorRetryComponent 
+        error={error}
+        onClick={loadOrders}
+      />
+    </div>
+  );
 
+  const notOrdersFoundContent = (
+    <div className="text-center py-5 empty-state">
+      <i className="bi bi-cart display-1 text-muted"></i>
+      <h3 className="mt-3">Ничего не найдено</h3>
+    </div>
+  );
+
+  const ordersistContent = (
+    <div>
       {orders.length === 0 ? (
         <div className="text-center py-5 empty-state">
           <i className="bi bi-cart display-1 text-muted"></i>
@@ -147,6 +146,29 @@ const OrdersManagerList = () => {
           </div>
         </div>
       )}
+    </div>
+  );
+
+  return (
+    <div className="sales-container">
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 className="page-title">Заказы</h2>
+          <p className="text-muted">
+            Найдено заказов: {orders.length}
+          </p>
+        </div>
+      </div>
+
+      <SearchBar onSearch={onSearch} placeholder='Поиск по имени покупателя...' />
+
+      {loading ? (loadingContent) : (
+        error ? (errorContent) : (
+          (customers_filter && orders.length === 0) ? 
+            (notOrdersFoundContent) : (ordersistContent)
+        )
+      )}
+
     </div>
   );
 };

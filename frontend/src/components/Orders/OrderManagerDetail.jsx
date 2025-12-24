@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ErrorComponent from '../ErrorComponent';
-import { updateOrder, markOrderComfirmed, markOrderDelivered, cancelOrder } from '../../endpoints/api';
+import { updateOrder, markOrderPaid, markOrderDelivered, cancelOrder } from '../../endpoints/api';
 import './Orders.css';
 
 // Компонент деталей заказа для продавца
@@ -31,8 +31,9 @@ const OrderManagerDetail = ({ order }) => {
 
     // Изменение статуса заказа
     let resultUpdateStatus;
-    if (formData.status == 'confirmed') {
-      resultUpdateStatus = await markOrderComfirmed(order.id);
+    console.log(formData.status);
+    if (formData.status == 'paid') {
+      resultUpdateStatus = await markOrderPaid(order.id);
     }
     else if (formData.status == 'delivered') {
       resultUpdateStatus = await markOrderDelivered(order.id);
@@ -74,10 +75,11 @@ const OrderManagerDetail = ({ order }) => {
     return units[unit] || unit;
   };
 
+  // Статус заказа
   const getStatusBadge = (status) => {
     const statusConfig = {
-      'pending': 'warning',
-      'confirmed': 'info',
+      'created': 'warning',
+      'paid': 'info',
       'delivered': 'success',
       'cancelled': 'danger'
     };
@@ -87,8 +89,8 @@ const OrderManagerDetail = ({ order }) => {
   // Текст статуса доставки
   const getStatusText = (status) => {
     const statusConfig = {
-      'pending': 'Ожидание подтверждения',
-      'confirmed': 'Подтвержден',
+      'created': 'Оформлен',
+      'paid': 'Оплачен',
       'delivered': 'Доставлен',
       'cancelled': 'Отменен'
     };
@@ -169,7 +171,7 @@ const OrderManagerDetail = ({ order }) => {
                         value={formData.status}
                         onChange={handleChange}
                       >
-                        <option value="confirmed">Подтвержден</option>
+                        <option value="paid">Оплачен</option>
                         <option value="delivered">Доставлен</option>
                         <option value="cancelled">Отменен</option>
                       </select>

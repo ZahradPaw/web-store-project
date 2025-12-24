@@ -7,8 +7,8 @@ class Order(models.Model):
 
     class Status(models.TextChoices):
         """Статус заказа"""
-        PENDING = "pending", "Ожидание подтверждения"
-        CONFIRMED = "confirmed", "Подтвержден"
+        CREATED = "created", "Оформлен"
+        PAID = "paid", "Оплачен"
         DELIVERED = "delivered", "Доставлен"
         CANCELLED = "cancelled", "Отменен"
 
@@ -25,7 +25,7 @@ class Order(models.Model):
     status = models.CharField(
         max_length=20,
         choices=Status.choices,
-        default=Status.PENDING,
+        default=Status.CREATED,
         verbose_name="Статус заказа")
 
     class Meta:
@@ -34,16 +34,6 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Заказ {self.pk} от {self.client.username}"
-
-    @property
-    def can_be_cancelled(self):
-        """Можно ли отменить заказ"""
-        return self.status == self.Status.PENDING
-
-    @property
-    def is_completed(self):
-        """Завершен ли заказ"""
-        return self.status in [self.Status.DELIVERED, self.Status.CANCELLED]
 
 
 class OrderItem(models.Model):

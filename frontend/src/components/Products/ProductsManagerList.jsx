@@ -9,20 +9,21 @@ import './Products.css';
 // Компонент списка товаров для управления ими
 const ProductsManagerList = () => {
   const [products, setProducts] = useState([]);
+  const [products_filter, setProductsFilter] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
     loadProducts();
-  }, []);
+  }, [products_filter]);
 
   // Загрузка товаров по API
   const loadProducts = async () => {
     setLoading(true);
     setError(''); 
 
-    const result = await getProducts();
+    const result = await getProducts(products_filter);
 
     if (result.success)
       setProducts(result.data.results);
@@ -50,51 +51,35 @@ const ProductsManagerList = () => {
     return units[unit] || unit;
   };
 
+  // Фильтр поиска товаров по названию
   const onSearch = (filter) => {
-    console.log(filter); 
+    setProductsFilter(filter); 
   }
 
-  // Контент при загрузке
-  if (loading) {
-   return (
-      <div>
-        <LoadingComponent text={'Загрузка товаров...'} />
-      </div>
-    );
-  }
+  const loadingContent = (
+    <div>
+      <LoadingComponent text={'Загрузка товаров...'} />
+    </div>
+  );
 
-  // Контент при ошибке
-  if (error) {
-    return (
-      <div>
-        <ErrorRetryComponent 
-          error={error}
-          onClick={loadProducts}
-        />
-      </div>
-    );
-  }
+  const errorContent = (
+    <div>
+      <ErrorRetryComponent 
+        error={error}
+        onClick={loadProducts}
+      />
+    </div>
+  );
 
-  return (
-    <div className="products-manager">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h2 className="page-title">Управление товарами</h2>
-          <p className="text-muted">
-            Всего товаров: {products.length}
-          </p>
-        </div>
-        <button
-          className="btn btn-primary"
-          onClick={handleAddProduct}
-        >
-          <i className="bi bi-plus-circle me-2"></i>
-          Добавить товар
-        </button>
-      </div>
+  const notProductFoundContent = (
+    <div className="text-center py-5 empty-products">
+      <i className="bi bi-box display-1 text-muted"></i>
+      <h3 className="mt-3">Ничего не найдено</h3>
+    </div>
+  );
 
-      <SearchBar onSearch={onSearch} />
-
+  const productListContent = (
+    <div>
       {products.length === 0 ? (
         <div className="text-center py-5 empty-products">
           <i className="bi bi-box display-1 text-muted"></i>
@@ -126,11 +111,6 @@ const ProductsManagerList = () => {
                   <tr key={product.id} className="product-row">
                     <td>
                       <div className="product-name">{product.name}</div>
-                      {product.description && (
-                        <div className="product-description">
-                          {product.description}
-                        </div>
-                      )}
                     </td>
                     <td className="product-price">
                       {parseFloat(product.price).toFixed(2)} ₽
@@ -159,6 +139,35 @@ const ProductsManagerList = () => {
             </table>
           </div>
         </div>
+      )}
+    </div>
+  );
+
+  return (
+    <div className="products-manager">
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 className="page-title">Управление товарами</h2>
+          <p className="text-muted">
+            Найдено товаров: {products.length}
+          </p>
+        </div>
+        <button
+          className="btn btn-primary"
+          onClick={handleAddProduct}
+        >
+          <i className="bi bi-plus-circle me-2"></i>
+          Добавить товар
+        </button>
+      </div>
+
+      <SearchBar onSearch={onSearch} />
+
+      {loading ? (loadingContent) : (
+        error ? (errorContent) : (
+          (products_filter && products.length === 0) ? 
+            (notProductFoundContent) : (productListContent)
+        )
       )}
     </div>
   );
