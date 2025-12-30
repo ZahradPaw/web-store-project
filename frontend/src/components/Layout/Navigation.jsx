@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { useCartContext } from '../../contexts/CartContext';
+import { getRoleDisplay } from '../../utils/user';
 
 // Компонент меню навигации
 const Navigation = () => {
@@ -21,18 +22,6 @@ const Navigation = () => {
     navigate('/login');
   };
 
-  // Отображение роли пользователя
-  const getRoleDisplay = (role) => {
-    const roles = {
-      'admin': 'Администратор',
-      'merchandiser': 'Товаровед',
-      'account_manager': 'Клиент-менеджер',
-      'salesperson': 'Продавец',
-      'client': 'Покупатель'
-    };
-    return roles[role] || role;
-  };
-
   const cartItemsCount = getCartItemsCount();
 
   // Кнопка для выхода из аккаунта
@@ -41,7 +30,7 @@ const Navigation = () => {
       <div className="d-flex align-items-center">
         <span className="text-light me-3">
           <small>
-            {user?.first_name || user?.username} {user?.last_name} | {getRoleDisplay(user?.role)}
+            {user?.first_name || user?.username} {user?.last_name} | {getRoleDisplay(user.role)}
           </small>
         </span>
         <button
@@ -175,6 +164,30 @@ const Navigation = () => {
             className={`nav-link me-3 ${isActive('/orders/create')}`}
           >
             Оформить продажу
+          </Link>
+          <Link
+            to="/profile"
+            className={`nav-link me-3 ${isActive('/profile')}`}
+          >
+            Личный кабинет
+          </Link>
+        </div>
+
+        <LogoutButton />
+      </nav>
+    );
+  }
+
+  // Меню для директора
+  if (user.role == 'director') {
+    return (
+      <nav className="d-flex align-items-center">
+        <div className="d-flex me-4">
+          <Link
+            to="/report"
+            className={`nav-link me-3 ${isActive('/report')}`}
+          >
+            Отчеты
           </Link>
           <Link
             to="/profile"

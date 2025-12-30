@@ -16,8 +16,8 @@ class OrderViewSet(viewsets.ModelViewSet):
         # По-умолчанию заказы получаются в обратном порядке номеров
         user = self.request.user
 
-        # Админы и продавцы видят все заказы
-        if user.role in [user.Roles.ADMIN, user.Roles.SALESPERSON]:
+        # Админы, продавцы и директоры видят все заказы
+        if user.role in [user.Roles.ADMIN, user.Roles.SALESPERSON, user.Roles.DIRECTOR]:
             # ID клиента из параметров запроса
             client_id = self.request.query_params.get('client_id')
             # Параметр фильтрации заказов по имени клиента

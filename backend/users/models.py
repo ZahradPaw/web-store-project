@@ -12,6 +12,7 @@ class User(AbstractUser):
         MERCHANDISER = "merchandiser", "Товаровед"
         ACCOUNT_MANAGER = "account_manager", "Клиент-менеджер"
         SALESPERSON = "salesperson", "Продавец"
+        DIRECTOR = "director", "Директор"
         ADMIN = "admin", "Администратор"
 
     role = models.CharField(max_length=50,

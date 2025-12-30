@@ -2,20 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ErrorComponent from '../ErrorComponent';
 import { register } from '../../endpoints/api';
+import { createDefaultUser } from '../../utils/user';
 import './Customers.css';
 
 // Форма добавления клиента сотрудником
 const CustomerForm = () => {
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    password2: '',
-    first_name: '',
-    last_name: '',
-    phone: '',
-    date_of_birth: ''
-  });
+  const [formData, setFormData] = useState(createDefaultUser());
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();

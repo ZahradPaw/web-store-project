@@ -1,5 +1,6 @@
 import React from 'react';
 import { useCartContext } from '../../contexts/CartContext';
+import { UNITS, getUnitDisplay } from '../../utils/product';
 import './Cart.css';
 
 // Компонент элемента корзины
@@ -13,15 +14,6 @@ const CartItem = ({ item }) => {
     else
       updateQuantity(item.product.id, parseFloat(newQuantity).toFixed(2));
 
-  };
-
-  const getUnitDisplay = (unit) => {
-    const units = {
-      'pieces': 'шт',
-      'kg': 'кг',
-      'liter': 'л'
-    };
-    return units[unit] || unit;
   };
 
   const itemTotal = parseFloat(item.product.price) * parseFloat(item.quantity);
@@ -53,8 +45,8 @@ const CartItem = ({ item }) => {
                 className="form-control quantity-input mx-2"
                 value={item.quantity}
                 onChange={(e) => handleQuantityChange(parseFloat(e.target.value).toFixed(2) || 0)}
-                min={item.product.unit === 'pieces' ? '1' : '0.1'}
-                step={item.product.unit === 'pieces' ? '1' : '0.1'}
+                min={item.product.unit === UNITS.PIECES ? '1' : '0.1'}
+                step={item.product.unit === UNITS.PIECES ? '1' : '0.1'}
               />
 
               <button

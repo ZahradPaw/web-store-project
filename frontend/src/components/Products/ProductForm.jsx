@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ErrorComponent from '../ErrorComponent';
 import { createProduct, updateProduct, deleteProduct } from '../../endpoints/api';
+import { createDefaultProduct, UNITS } from '../../utils/product';
 import './Products.css';
 
 // Форма добавления и редактирования товара
@@ -9,13 +10,7 @@ const ProductForm = ({ product }) => {
   // Если параметром передан product, то осуществляется редактирование данного товара
   // В ином случае идет добавление нового товара
 
-  const [formData, setFormData] = useState({
-    name: '',
-    price: '',
-    unit: 'pieces',
-    quantity: '',
-    description: ''
-  });
+  const [formData, setFormData] = useState(createDefaultProduct);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [errors, setErrors] = useState({});
@@ -26,7 +21,7 @@ const ProductForm = ({ product }) => {
       setFormData({
         name: product.name || '',
         price: product.price || '',
-        unit: product.unit || 'pieces',
+        unit: product.unit || UNITS.PIECES,
         quantity: product.quantity || '',
         description: product.description || ''
       });
@@ -224,14 +219,14 @@ const ProductForm = ({ product }) => {
                 </label>
                 <input
                   type="number"
-                  step={formData.unit === 'pieces' ? '1' : '0.01'}
+                  step={formData.unit === UNITS.PIECES ? '1' : '0.01'}
                   min="0"
                   className={`form-control ${errors.quantity ? 'is-invalid' : ''}`}
                   id="quantity"
                   name="quantity"
                   value={formData.quantity}
                   onChange={handleChange}
-                  placeholder={formData.unit === 'pieces' ? '0' : '0.00'}
+                  placeholder={formData.unit === UNITS.PIECES ? '0' : '0.00'}
                 />
                 {errors.quantity && (
                   <div className="invalid-feedback">{errors.quantity}</div>

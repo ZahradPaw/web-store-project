@@ -4,6 +4,9 @@ import LoadingComponent from '../LoadingComponent';
 import ErrorComponent from '../ErrorComponent';
 import ErrorRetryComponent from '../ErrorRetryComponent';
 import { getOrder, cancelOrder } from '../../endpoints/api';
+import { getUnitDisplay } from '../../utils/product';
+import { getStatusDisplay, getStatusBadge } from '../../utils/order';
+import { formatDate, formatDateTime } from '../../utils/utils';
 import './Orders.css';
 
 // Компонент деталей заказа для клиента
@@ -31,31 +34,6 @@ const OrderDetail = ({ order_id }) => {
     setLoading(false);
   };
 
-  // Значок статуса заказа
-  const getStatusBadge = (status) => {
-    const statusConfig = {
-      'created': { class: 'warning', text: 'Оформлен' },
-      'paid': { class: 'info', text: 'Оплачен' },
-      'delivered': { class: 'success', text: 'Доставлен' },
-      'cancelled': { class: 'danger', text: 'Отменен' }
-    };
-
-    const config = statusConfig[status];
-    return `badge bg-${config.class}`;
-  };
-
-  // Текст статуса доставки
-  const getStatusText = (status) => {
-    const statusConfig = {
-      'created': 'Оформлен',
-      'paid': 'Оплачен',
-      'delivered': 'Доставлен',
-      'cancelled': 'Отменен'
-    };
-
-    return statusConfig[status] || status;
-  };
-
   // Вычисление стоимости заказа без скидки
   const getOrderPriceWithoutDiscount = (orderItems) => {
     let res = 0;
@@ -64,27 +42,6 @@ const OrderDetail = ({ order_id }) => {
     }
     return res.toFixed(2);
   }
-
-  // Локализация дат
-  const formatDate = (dateString) => {
-    if (!dateString) return 'Не указана';
-    return new Date(dateString).toLocaleDateString('ru-RU');
-  };
-
-  // Локализация даты-времени
-  const formatDateTime = (dateString) => {
-    return new Date(dateString).toLocaleString('ru-RU');
-  };
-
-  // Отображение единиц товара
-  const getUnitDisplay = (unit) => {
-    const units = {
-      'pieces': 'шт',
-      'kg': 'кг',
-      'liter': 'л'
-    };
-    return units[unit] || unit;
-  };
 
   // Проверка, можно ли отменить заказ
   const canBeCancelled = () => {
@@ -159,7 +116,7 @@ const OrderDetail = ({ order_id }) => {
                   <span className="label">Статус:</span>
                   <span className="value">
                     <span className={getStatusBadge(order.status)}>
-                      {getStatusText(order.status)}
+                      {getStatusDisplay(order.status)}
                     </span>
                   </span>
                 </div>

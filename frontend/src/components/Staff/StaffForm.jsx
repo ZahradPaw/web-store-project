@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ErrorComponent from '../ErrorComponent';
 import { register, updateUser, deleteUser } from '../../endpoints/api';
+import { ROLES, createDefaultUser } from '../../utils/user';
 import './Staff.css'; 
 
 // Форма добавления и редактирования сотрудника
@@ -9,17 +10,7 @@ const StaffForm = ({ staff }) => {
   // Если параметром передан staff, то осуществляется редактирование данного сотрудника
   // В ином случае идет добавление нового сотрудника
 
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    password2: '',
-    first_name: '',
-    last_name: '',
-    phone: '',
-    role: 'salesperson',
-    date_of_birth: ''
-  });
+  const [formData, setFormData] = useState(createDefaultUser());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [errors, setErrors] = useState({});
@@ -35,7 +26,7 @@ const StaffForm = ({ staff }) => {
         first_name: staff.first_name || '',
         last_name: staff.last_name || '',
         phone: staff.phone || '',
-        role: staff.role || 'salesperson',
+        role: staff.role || ROLES.SALESPERSON,
         date_of_birth: staff.date_of_birth || ''
       });
     }
@@ -333,6 +324,7 @@ const StaffForm = ({ staff }) => {
                   <option value="salesperson">Продавец</option>
                   <option value="merchandiser">Товаровед</option>
                   <option value="account_manager">Клиент-менеджер</option>
+                  <option value="director">Директор</option>
                   <option value="admin">Администратор</option>
                 </select>
               </div>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getUsers } from '../../endpoints/api';
 import ErrorComponent from '../ErrorComponent';
 import LoadingComponent from '../LoadingComponent';
+import { getRoleDisplay } from '../../utils/user';
 import './Staff.css'; 
 
 // Компонент списка сотрудников
@@ -42,17 +43,6 @@ const StaffList = () => {
   // Перенаправление на страницу редактирования сотрудника
   const handleEditStaff = (staff) => {
     navigate(`/staff/detail/${staff.id}`);
-  };
-
-  // Отображение роли пользователя
-  const getRoleDisplay = (role) => {
-    const roles = {
-      'admin': 'Администратор',
-      'merchandiser': 'Товаровед',
-      'account_manager': 'Клиент-менеджер',
-      'salesperson': 'Продавец'
-    };
-    return roles[role] || role;
   };
 
   // Контент при загрузке

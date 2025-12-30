@@ -3,7 +3,7 @@ from .models import User
 
 
 STAFF_USERS = (User.Roles.SALESPERSON, User.Roles.MERCHANDISER,
-               User.Roles.ADMIN, User.Roles.ACCOUNT_MANAGER)
+               User.Roles.ADMIN, User.Roles.ACCOUNT_MANAGER, User.Roles.DIRECTOR)
 
 
 class IsStaffUser(permissions.BasePermission):

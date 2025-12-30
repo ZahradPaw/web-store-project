@@ -4,6 +4,7 @@ import { getUsers } from '../../endpoints/api';
 import ErrorRetryComponent from '../ErrorRetryComponent';
 import LoadingComponent from '../LoadingComponent';
 import SearchBar from '../SearchBar';
+import { formatDate } from '../../utils/utils';
 import './Customers.css';
 
 // Компонент списка клиентов
@@ -95,7 +96,7 @@ const CustomerList = () => {
                   <th>Логин</th>
                   <th>Email</th>
                   <th>Телефон</th>
-                  <th>Дата регистрации</th>
+                  <th>Дата рождения</th>
                   <th>Действия</th>
                 </tr>
               </thead>
@@ -110,7 +111,7 @@ const CustomerList = () => {
                     <td>{customer.username}</td>
                     <td>{customer.email}</td>
                     <td>{customer.phone || 'Не указан'}</td>
-                    <td>{new Date(customer.date_joined).toLocaleDateString('ru-RU')}</td>
+                    <td>{formatDate(customer.date_of_birth)}</td>
                     <td>
                       <div className="btn-group btn-group-sm">
                         <button

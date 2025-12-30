@@ -71,3 +71,7 @@ body {
   border-color: var(--accent-color);
   box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
 }
+
+.table {
+  margin-bottom: 0 !important;
+}

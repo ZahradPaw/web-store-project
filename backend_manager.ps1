@@ -2,7 +2,7 @@
 
 # Установка параметров скрипта
 param (
-    [string]$venvPath = ".venv",  # Путь к виртуальному окружению
+    [string]$venvPath = ".\.venv",  # Путь к виртуальному окружению
     [string]$managePyPath = "backend\manage.py"  # Путь к manage.py
 )
 
@@ -87,7 +87,9 @@ function Load-Data {
 try {
     # Активация виртуального окружения
     if (-not (Activate-Venv -path $venvPath)) {
-        exit 1
+	Write-Host "Ошибка активации venv"
+	Pause        
+	exit 1
     }
 
     # Главный цикл меню
@@ -118,6 +120,7 @@ try {
     } while ($selection -ne '0')
 }
 catch {
-    Write-Host "Произошла ошибка: $_" -ForegroundColor Red
-    exit 1
+	Write-Host "Произошла ошибка: $_" -ForegroundColor Red
+	Pause
+	exit 1
 }

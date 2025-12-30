@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../contexts/AuthContext';
+import { UNITS, getUnitDisplay } from '../../utils/product';
 import './Products.css';
 
 // Компонент карточки товара на станице с товарами
@@ -21,19 +22,8 @@ const ProductCard = ({ product, onAddToCart }) => {
     }
   };
 
-  // Отображение единиц измерения
-  const getUnitDisplay = (unit) => {
-    const units = {
-      'pieces': 'шт',
-      'kg': 'кг',
-      'liter': 'л'
-    };
-    return units[unit] || unit;
-  };
-
   // Перенаправление на страницу товара при нажатии на карточку
   const handleProductClick = () => {
-    console.log(product.id);
     navigate(`/product/${product.id}`);
   };
 
@@ -76,9 +66,9 @@ const ProductCard = ({ product, onAddToCart }) => {
                 className="form-control quantity-input"
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
-                max={product.unit === 'pieces' ? Math.floor(product.quantity) : product.quantity}
-                min={product.unit === 'pieces' ? '1' : '0.1'}
-                step={product.unit === 'pieces' ? '1' : '0.1'}
+                max={product.unit === UNITS.PIECES ? Math.floor(product.quantity) : product.quantity}
+                min={product.unit === UNITS.PIECES ? '1' : '0.1'}
+                step={product.unit === UNITS.PIECES ? '1' : '0.1'}
               />
               <button
                 className="btn add-to-cart-btn text-white btn-sm flex-grow-1"

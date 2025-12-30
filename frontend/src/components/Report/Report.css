@@ -1,0 +1,260 @@
+.director-reports {
+  padding: 5px;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+.reports-header {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.reports-tabs {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.tabs-nav {
+  display: flex;
+  background: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  padding: 0 20px;
+}
+
+.tab-btn {
+  padding: 12px 20px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: #6c757d;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+}
+
+.tab-btn:hover {
+  color: #495057;
+  background: rgba(0,0,0,0.05);
+}
+
+.tab-btn.active {
+  color: #667eea;
+  border-bottom-color: #667eea;
+  background: white;
+}
+
+.tab-content {
+  padding: 20px;
+}
+
+.search-filters-section {
+  margin-bottom: 20px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+}
+
+.search-container {
+  margin-bottom: 10px;
+}
+
+.filters-container {
+  padding: 15px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.filters-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: flex-end;
+}
+
+.filter-item {
+  flex: 1;
+  min-width: 150px;
+}
+
+.filter-item label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
+}
+
+.filter-item .form-control,
+.filter-item .form-select {
+  font-size: 14px;
+}
+
+.reports-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.results-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.controls-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dropdown-item {
+  cursor: pointer;
+}
+
+.form-check.dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+}
+
+.form-check-input {
+  margin-right: 8px;
+}
+
+.form-check-label {
+  flex: 1;
+  cursor: pointer;
+}
+
+.data-table-container {
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  overflow: hidden;
+}
+
+.table thead {
+  background: #f8f9fa;
+}
+
+.table th {
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+  padding: 12px 8px;
+  vertical-align: middle;
+}
+
+.table td {
+  padding: 10px 8px;
+  vertical-align: middle;
+  border-color: #e9ecef;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0,0,0,.02);
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(0,0,0,.04);
+}
+
+.table-active {
+  background-color: rgba(102, 126, 234, 0.1) !important;
+}
+
+/* Панель выбора столбцов */
+.columns-selection-panel {
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.columns-checkboxes {
+  user-select: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 5px;
+  overflow-y: auto;
+}
+
+/* Стили для деталей заказа */
+.order-details-row {
+  background-color: #f8f9fa !important;
+  border-top: 2px solid #dee2e6;
+}
+
+.order-details-row td {
+  padding: 0;
+  border-top: 2px solid #dee2e6;
+}
+
+.order-items-container {
+  
+  background: white;
+  
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+}
+
+.order-items-container h6 {
+  color: #495057;
+  font-weight: 600;
+}
+
+.order-items-container .table {
+  font-size: 13px;
+  background: white;
+}
+
+.order-items-container .table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  padding: 8px;
+}
+
+.order-items-container .table td {
+  padding: 8px;
+  vertical-align: middle;
+}
+
+.order-items-container .table tfoot {
+  background: #f8f9fa;
+  font-weight: 600;
+}
+
+.badge {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 8px;
+}
+
+.btn-sm {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.empty-data {
+  padding: 40px 20px;
+  color: #6c757d;
+}

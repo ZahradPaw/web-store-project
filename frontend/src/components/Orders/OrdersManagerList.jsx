@@ -4,6 +4,8 @@ import { getOrders } from '../../endpoints/api';
 import LoadingComponent from '../LoadingComponent';
 import ErrorRetryComponent from '../ErrorRetryComponent';
 import SearchBar from '../SearchBar';
+import { getStatusDisplay, getStatusBadge } from '../../utils/order';
+import { formatDate } from '../../utils/utils';
 import './Orders.css';
 
 // Компонент списка заказов для продавца
@@ -13,31 +15,6 @@ const OrdersManagerList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
-  // Значок статуса заказа
-  const getStatusBadge = (status) => {
-    const statusConfig = {
-      'created': { class: 'warning', text: 'Оформлен' },
-      'paid': { class: 'info', text: 'Оплачен' },
-      'delivered': { class: 'success', text: 'Доставлен' },
-      'cancelled': { class: 'danger', text: 'Отменен' }
-    };
-
-    const config = statusConfig[status];
-    return `badge bg-${config.class}`;
-  };
-
-  // Текст статуса доставки
-  const getStatusText = (status) => {
-    const statusConfig = {
-      'created': 'Оформлен',
-      'paid': 'Оплачен',
-      'delivered': 'Доставлен',
-      'cancelled': 'Отменен'
-    };
-
-    return statusConfig[status] || status;
-  };
 
   useEffect(() => {
     loadOrders();
@@ -118,16 +95,16 @@ const OrdersManagerList = () => {
                   <tr key={order.id} className="order-row">
                     <td>#{order.id}</td>
                     <td>{order.client_name}</td>
-                    <td>{new Date(order.order_date).toLocaleDateString('ru-RU')}</td>
+                    <td>{formatDate(order.order_date)}</td>
                     <td>{parseFloat(order.total_price).toFixed(2)} ₽</td>
                     <td>
                       <span className={getStatusBadge(order.status)}>
-                        {getStatusText(order.status)}
+                        {getStatusDisplay(order.status)}
                       </span>
                     </td>
                     <td>
                       {order.delivery_date ? 
-                        new Date(order.delivery_date).toLocaleDateString('ru-RU') : 
+                        formatDate(order.delivery_date) : 
                         'Не указана'
                       }
                     </td>

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import ErrorComponent from '../ErrorComponent';
 import LoadingComponent from '../LoadingComponent';
 import { getProducts, getUsers, createOrder } from '../../endpoints/api';
+import { UNITS, getUnitDisplay } from '../../utils/product';
+import { ROLES } from '../../utils/user';
 import './Orders.css';
 
 // Компонент создания заказа продавцом
@@ -22,12 +24,11 @@ const OrderCreateCard = ({ onSubmit }) => {
     setLoading(true);
     setError('');
 
-    const resultUsers = await getUsers();
+    const resultUsers = await getUsers('', ROLES.CLIENT);
     const resultProducts = await getProducts();
 
     if (resultUsers.success && resultProducts.success) {
-      setCustomers(resultUsers.data.results.filter(
-        user => user.role == 'client'));
+      setCustomers(resultUsers.data.results);
       setProducts(resultProducts.data.results);
     }
     else {
@@ -113,16 +114,6 @@ const OrderCreateCard = ({ onSubmit }) => {
     return cart.reduce((total, item) => {
       return total + (parseFloat(item.product.price) * parseFloat(item.quantity));
     }, 0);
-  };
-
-  // Единица измерения товара
-  const getUnitDisplay = (unit) => {
-    const units = {
-      'pieces': 'шт',
-      'kg': 'кг',
-      'liter': 'л'
-    };
-    return units[unit] || unit;
   };
 
   // Контент при загрузке
@@ -219,7 +210,7 @@ const OrderCreateCard = ({ onSubmit }) => {
                               value={item.quantity}
                               onChange={(e) => handleUpdateQuantity(item.product.id, e.target.value)}
                               min="0.1"
-                              step={item.product.unit === 'pieces' ? '1' : '0.1'}
+                              step={item.product.unit ===  UNITS.PIECES ? '1' : '0.1'}
                             />
                           </div>
                           <div className="col-md-2 text-end">

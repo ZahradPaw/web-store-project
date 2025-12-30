@@ -1,4 +1,7 @@
 import React from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
@@ -27,9 +30,7 @@ import StaffListPage from './pages/StaffListPage';
 import StaffDetailPage from './pages/StaffDetailPage';
 import StaffCreatePage from './pages/StaffCreatePage';
 import LoyaltySettingsPage from './pages/LoyaltySettingsPage';
-
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap-icons/font/bootstrap-icons.css';
+import ReportPage from './pages/ReportPage';
 
 const AppContent = () => {
   return (
@@ -182,6 +183,14 @@ const AppContent = () => {
               element={
                 <PrivateRoute>
                   <LoyaltySettingsPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/report"
+              element={
+                <PrivateRoute>
+                  <ReportPage />
                 </PrivateRoute>
               }
             />

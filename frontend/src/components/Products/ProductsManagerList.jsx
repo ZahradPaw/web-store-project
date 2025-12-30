@@ -4,6 +4,7 @@ import { getProducts } from '../../endpoints/api';
 import ErrorRetryComponent from '../ErrorRetryComponent';
 import LoadingComponent from '../LoadingComponent';
 import SearchBar from '../SearchBar';
+import { getUnitDisplay, UNITS } from '../../utils/product';
 import './Products.css';
 
 // Компонент списка товаров для управления ими
@@ -40,15 +41,6 @@ const ProductsManagerList = () => {
   // Перенаправление на страницу управления товаром
   const handleEditProduct = (product) => {
     navigate(`/products/detail/${product.id}`); 
-  };
-
-  const getUnitDisplay = (unit) => {
-    const units = {
-      'pieces': 'шт',
-      'kg': 'кг',
-      'liter': 'л'
-    };
-    return units[unit] || unit;
   };
 
   // Фильтр поиска товаров по названию
@@ -119,7 +111,7 @@ const ProductsManagerList = () => {
                       {getUnitDisplay(product.unit)}
                     </td>
                     <td className="product-quantity">
-                      {product.unit == "pieces" ?
+                      {product.unit == UNITS.PIECES ?
                         parseInt(product.quantity)
                         : parseFloat(product.quantity).toFixed(2)}
                     </td>

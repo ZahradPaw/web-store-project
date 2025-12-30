@@ -1,27 +1,10 @@
 import React from 'react';
+import { getRoleDisplay } from '../../utils/user';
+import { formatDate } from '../../utils/utils';
 import './Profile.css';
 
 // Компонент с информацией о пользователе
 const UserInfo = ({ user }) => {
-
-  // Локализация даты
-  const formatDate = (dateString) => {
-    if (!dateString) return 'Не указана';
-    return new Date(dateString).toLocaleDateString('ru-RU');
-  };
-
-  // Отображение роли пользователя
-  const getRoleDisplay = (role) => {
-    const roles = {
-      'client': 'Покупатель',
-      'merchandiser': 'Товаровед',
-      'account_manager': 'Клиент-менеджер',
-      'salesperson': 'Продавец',
-      'admin': 'Администратор'
-    };
-    return roles[role] || role;
-  };
-
   return (
     <div className="card user-info-card">
       <div className="card-header">

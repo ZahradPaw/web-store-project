@@ -1,40 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getStatusDisplay, getStatusBadge } from '../../utils/order';
+import { formatDate } from '../../utils/utils';
 import './Orders.css';
 
 // Компонент карточки заказа
 const OrderCard = ({ order }) => {
   const navigate = useNavigate();
-
-  // Значок статуса заказа
-  const getStatusBadge = (status) => {
-    const statusConfig = {
-      'created': { class: 'warning', text: 'Оформлен' },
-      'paid': { class: 'info', text: 'Оплачен' },
-      'delivered': { class: 'success', text: 'Доставлен' },
-      'cancelled': { class: 'danger', text: 'Отменен' }
-    };
-
-    const config = statusConfig[status];
-    return `badge bg-${config.class}`;
-  };
-
-  // Текст статуса доставки
-  const getStatusText = (status) => {
-    const statusConfig = {
-      'created': 'Оформлен',
-      'paid': 'Оплачен',
-      'delivered': 'Доставлен',
-      'cancelled': 'Отменен'
-    };
-
-    return statusConfig[status] || status;
-  };
-
-  // Локализация дат
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('ru-RU');
-  };
 
   // Перенаправление на страницу заказа при нажатии на карточку
   const handleOrderClick = () => {
@@ -72,7 +44,7 @@ const OrderCard = ({ order }) => {
 
           <div className="col-md-2">
             <span className={getStatusBadge(order.status)}>
-              {getStatusText(order.status)}
+              {getStatusDisplay(order.status)}
             </span>
           </div>
 

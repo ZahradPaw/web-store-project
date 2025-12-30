@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { register } from '../../endpoints/api';
+import { createDefaultUser } from '../../utils/user';
 import ErrorComponent from '../ErrorComponent';
 import './Auth.css';
 
@@ -8,16 +9,7 @@ import './Auth.css';
 const RegisterForm = () => {
   const navigate = useNavigate();
   
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    password2: '',
-    first_name: '',
-    last_name: '',
-    phone: '',
-    date_of_birth: '',
-  });
+  const [formData, setFormData] = useState(createDefaultUser());
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);

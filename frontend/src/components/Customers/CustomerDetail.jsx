@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ErrorComponent from '../ErrorComponent';
 import { getCustomerOrders } from '../../endpoints/api';
+import { getStatusDisplay, getStatusBadge } from '../../utils/order';
+import { formatDate } from '../../utils/utils';
 import './Customers.css';
 
 // Компонент карточки клиента
@@ -34,33 +36,6 @@ const CustomerDetail = ({ customer }) => {
   // Перенаправление на страницу выбранного заказа
   const handleOrderSelect = (order) => {
     navigate(`/orders/detail/${order.id}`);
-  };
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('ru-RU');
-  };
-
-  // Статус заказа
-  const getStatusBadge = (status) => {
-    const statusConfig = {
-      'created': 'warning',
-      'paid': 'info',
-      'delivered': 'success',
-      'cancelled': 'danger'
-    };
-    return `badge bg-${statusConfig[status] || 'secondary'}`;
-  };
-
-  // Текст статуса доставки
-  const getStatusText = (status) => {
-    const statusConfig = {
-      'created': 'Оформлен',
-      'paid': 'Оплачен',
-      'delivered': 'Доставлен',
-      'cancelled': 'Отменен'
-    };
-
-    return statusConfig[status] || status;
   };
 
   return (
@@ -153,7 +128,7 @@ const CustomerDetail = ({ customer }) => {
                       </div>
                       <div className="col-md-3">
                         <span className={getStatusBadge(order.status)}>
-                          {getStatusText(order.status)}
+                          {getStatusDisplay(order.status)}
                         </span>
                       </div>
                     </div>

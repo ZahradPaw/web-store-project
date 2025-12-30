@@ -86,6 +86,12 @@
   border: 1px solid #6ca777;
 }
 
+.role-director {
+  background-color: #d2c0c0;
+  color: #6b3636;
+  border: 1px solid #5c2b2b;
+}
+
 /* Стили для форм */
 .admin-form-container {
   margin: 0 auto;

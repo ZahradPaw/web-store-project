@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import ErrorComponent from '../ErrorComponent';
 import { updateOrder, markOrderPaid, markOrderDelivered, cancelOrder } from '../../endpoints/api';
+import { getUnitDisplay } from '../../utils/product';
+import { getStatusDisplay, getStatusBadge } from '../../utils/order';
+import { formatDate } from '../../utils/utils';
 import './Orders.css';
 
 // Компонент деталей заказа для продавца
@@ -61,43 +64,6 @@ const OrderManagerDetail = ({ order }) => {
     setError('');
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return 'Не указана';
-    return new Date(dateString).toLocaleDateString('ru-RU');
-  };
-
-  const getUnitDisplay = (unit) => {
-    const units = {
-      'pieces': 'шт',
-      'kg': 'кг',
-      'liter': 'л'
-    };
-    return units[unit] || unit;
-  };
-
-  // Статус заказа
-  const getStatusBadge = (status) => {
-    const statusConfig = {
-      'created': 'warning',
-      'paid': 'info',
-      'delivered': 'success',
-      'cancelled': 'danger'
-    };
-    return `badge bg-${statusConfig[status] || 'secondary'}`;
-  };
-
-  // Текст статуса доставки
-  const getStatusText = (status) => {
-    const statusConfig = {
-      'created': 'Оформлен',
-      'paid': 'Оплачен',
-      'delivered': 'Доставлен',
-      'cancelled': 'Отменен'
-    };
-
-    return statusConfig[status] || status;
-  };
-
   return (
     <div className="sales-order-detail">
       <div className="card">
@@ -146,7 +112,7 @@ const OrderManagerDetail = ({ order }) => {
                     <div className="info-item">
                       <span className="label">Статус:</span>
                       <span className={getStatusBadge(order.status)}>
-                        {getStatusText(order.status)}
+                        {getStatusDisplay(order.status)}
                       </span>
                     </div>
                     <div className="info-item">
@@ -182,7 +148,7 @@ const OrderManagerDetail = ({ order }) => {
                         type="date"
                         className="form-control"
                         name="delivery_date"
-                        value={formData.delivery_date}
+                        value={formatDate(formData.delivery_date)}
                         onChange={handleChange}
                       />
                     </div>
