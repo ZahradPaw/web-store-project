@@ -8,7 +8,7 @@ const ProductCreatePage = () => {
 
   return (
     <div className="container py-4">
-      <div className="row mb-4">
+      <div className="row mb-2">
         <div className="col-12">
           <button
             className="btn btn-outline-secondary mb-3"

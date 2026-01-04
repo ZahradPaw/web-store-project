@@ -690,9 +690,6 @@ const ReportComponent = () => {
                   <table className="table table-sm table-striped table-hover">
                     <thead>
                       <tr>
-                        {visibleColumns.orders.items && 
-                          <th style={{ width: '50px' }}></th>
-                        }
                         {getColumnConfig(activeTab)
                           .filter(col => visibleColumns.orders[col.key])
                           .map(col => (
@@ -700,6 +697,9 @@ const ReportComponent = () => {
                               {col.label}
                             </th>
                           ))
+                        }
+                        {visibleColumns.orders.items && 
+                          <th style={{ width: '50px' }}></th>
                         }
                       </tr>
                     </thead>
@@ -709,19 +709,7 @@ const ReportComponent = () => {
                         
                         return (
                           <React.Fragment key={order.id}>
-                            <tr className={isExpanded ? 'table-active' : ''}>
-                              {visibleColumns.orders.items && 
-                                <td>
-                                  <button
-                                    className="btn btn-sm btn-outline-secondary"
-                                    onClick={() => toggleOrderExpansion(order.id)}
-                                    title={isExpanded ? 'Свернуть товары' : 'Развернуть товары'}
-                                  >
-                                    <i className={`bi ${isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'}`}></i>
-                                  </button>
-                                </td>
-                              }
-                              
+                            <tr>
                               {getColumnConfig(activeTab)
                                 .filter(col => visibleColumns.orders[col.key])
                                 .map(col => {
@@ -767,6 +755,18 @@ const ReportComponent = () => {
                                   }
                                 })
                               }
+
+                              {visibleColumns.orders.items && 
+                                <td>
+                                  <button
+                                    className="btn btn-sm btn-outline-secondary"
+                                    onClick={() => toggleOrderExpansion(order.id)}
+                                    title={isExpanded ? 'Свернуть товары' : 'Развернуть товары'}
+                                  >
+                                    <i className={`bi ${isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'}`}></i>
+                                  </button>
+                                </td>
+                              }
                             </tr>
                             
                             {/* Строка с товарами заказа */}
@@ -801,7 +801,7 @@ const ReportComponent = () => {
                                                 </div>
                                               </td>
                                               <td>
-                                                {item.quantity}
+                                                {parseFloat(item.quantity)}
                                               </td>
                                               <td>
                                                 {parseFloat(item.price || item.unit_price || 0).toFixed(2)} ₽

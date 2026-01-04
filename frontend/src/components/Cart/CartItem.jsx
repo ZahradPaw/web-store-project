@@ -7,7 +7,7 @@ import './Cart.css';
 const CartItem = ({ item }) => {
   const { updateQuantity, removeFromCart } = useCartContext();
 
-  // Изменени екол-во товара в корзине
+  // Изменение кол-во товара в корзине
   const handleQuantityChange = (newQuantity) => {
     if (newQuantity <= 0)
       removeFromCart(item.product.id);

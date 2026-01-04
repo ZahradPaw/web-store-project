@@ -1,23 +1,34 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ErrorComponent from '../ErrorComponent';
 import LoadingComponent from '../LoadingComponent';
-import { getProducts, getUsers, createOrder } from '../../endpoints/api';
+import { getProducts, getUsers, 
+  createOrder, getCustomerOrders } from '../../endpoints/api';
 import { UNITS, getUnitDisplay } from '../../utils/product';
+import { getStatusBadge, getStatusDisplay } from '../../utils/order';
 import { ROLES } from '../../utils/user';
+import { formatDate } from '../../utils/utils';
+import SearchBar from '../SearchBar';
 import './Orders.css';
 
 // Компонент создания заказа продавцом
 const OrderCreateCard = ({ onSubmit }) => {
   const [customers, setCustomers] = useState([]);
   const [products, setProducts] = useState([]);
-  const [selectedCustomer, setSelectedCustomer] = useState('');
+  const [selectedCustomerID, setSelectedCustomerID] = useState('');
+  const [customerOrders, setCustomerOrders] = useState([]);
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+    loadCustomerOrders();
+  }, [selectedCustomerID]);
 
   // Загрузка клиентов и товаров
   const loadData = async () => {
@@ -33,6 +44,24 @@ const OrderCreateCard = ({ onSubmit }) => {
     }
     else {
       setError(resultUsers.error + '\n' + resultProducts.error);
+    }
+    setLoading(false);
+  };
+
+  // Загрузка заказов выбранного покупателя
+  const loadCustomerOrders = async () => {
+    if (!selectedCustomerID) return;
+
+    setLoading(true);
+    setError('');
+    
+    const result = await getCustomerOrders(selectedCustomerID);
+
+    if (result.success) {
+      setCustomerOrders(result.data.results);
+    }
+    else {
+      setError(result.error);
     }
     setLoading(false);
   };
@@ -72,7 +101,7 @@ const OrderCreateCard = ({ onSubmit }) => {
 
   // Создание заказа
   const handleSubmit = async () => {
-    if (!selectedCustomer) {
+    if (!selectedCustomerID) {
       setError('Выберите покупателя');
       return;
     }
@@ -85,7 +114,7 @@ const OrderCreateCard = ({ onSubmit }) => {
     setLoading(true);
     setError('');
     const orderData = {
-      client: parseInt(selectedCustomer),
+      client: parseInt(selectedCustomerID),
       items: cart.map(item => ({
         product: item.product.id,
         quantity: item.quantity
@@ -143,8 +172,8 @@ const OrderCreateCard = ({ onSubmit }) => {
                 <h6>Покупатели</h6>
                 <select
                   className="form-select"
-                  value={selectedCustomer}
-                  onChange={(e) => setSelectedCustomer(e.target.value)}
+                  value={selectedCustomerID}
+                  onChange={(e) => setSelectedCustomerID(e.target.value)}
                 >
                   <option value="">Выберите покупателя</option>
                   {customers.map(customer => (
@@ -156,6 +185,7 @@ const OrderCreateCard = ({ onSubmit }) => {
               </div>
 
               <h6>Доступные товары</h6>
+              <SearchBar placeholder='Поиск товаров...' />
               <div className="products-list">
                 {products.map(product => (
                   <div key={product.id} className="product-item card mb-2">
@@ -188,87 +218,139 @@ const OrderCreateCard = ({ onSubmit }) => {
             </div>
 
             <div className="col-md-6">
-              <h6>Товары в заказе</h6>
-              {cart.length === 0 ? (
-                <div className="text-center py-4 text-muted">
-                  <i className="bi bi-cart display-6"></i>
-                  <p>Товары не добавлены</p>
-                </div>
-              ) : (
-                <div className="cart-items">
-                  {cart.map(item => (
-                    <div key={item.product.id} className="cart-item card mb-2">
-                      <div className="card-body">
-                        <div className="row align-items-center">
-                          <div className="col-md-5">
-                            <div className="product-name">{item.product.name}</div>
-                          </div>
-                          <div className="col-md-3">
-                            <input
-                              type="number"
-                              className="form-control form-control-sm"
-                              value={item.quantity}
-                              onChange={(e) => handleUpdateQuantity(item.product.id, e.target.value)}
-                              min="0.1"
-                              step={item.product.unit ===  UNITS.PIECES ? '1' : '0.1'}
-                            />
-                          </div>
-                          <div className="col-md-2 text-end">
-                            {parseFloat(item.product.price * item.quantity).toFixed(2)} ₽
-                          </div>
-                          <div className="col-md-2 text-end">
-                            <button
-                              className="btn btn-outline-danger btn-sm"
-                              onClick={() => handleRemoveFromCart(item.product.id)}
-                            >
-                              <i className="bi bi-trash"></i>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+              {selectedCustomerID && (
+                <div className="mb-4">
+                  <h6>Заказы выбранного покупателя</h6>
+                  <ErrorComponent error={error} />
 
-                  <div className="cart-total card mt-3">
-                    <div className="card-body">
-                      <div className="d-flex justify-content-between align-items-center">
-                        <strong>Итого:</strong>
-                        <strong className="text-primary">
-                          {getTotalPrice().toFixed(2)} ₽
-                        </strong>
-                      </div>
+                  <div className='products-list'>
+                  {loading ? (
+                    <div className="text-center py-3">
+                      <div className="spinner-border spinner-border-sm text-primary"></div>
+                      <span className="ms-2">Загрузка заказов...</span>
                     </div>
-                  </div>
-
-                  <div className="d-grid gap-2 mt-3">
-                    <button
-                      className="btn btn-success"
-                      onClick={handleSubmit}
-                      disabled={loading || !selectedCustomer || cart.length === 0}
-                    >
-                      {loading ? (
-                        <div>
-                          <span className="spinner-border spinner-border-sm me-2"></span>
-                          Оформление...
+                  ) : customerOrders.length === 0 ? (
+                    <div className="text-center py-4">
+                      <i className="bi bi-cart text-muted display-6"></i>
+                      <p className="text-muted mt-2">У клиента пока нет заказов</p>
+                    </div>
+                  ) : (
+                    <div className="orders-list">
+                      {customerOrders.map(order => (
+                        <div
+                          key={order.id}
+                          className="order-item card mb-2"
+                          onClick={() => navigate(`/orders/detail/${order.id}`)}
+                        >
+                          <div className="card-body py-2">
+                            <div className="row align-items-center">
+                              <div className="col-md-3">
+                                <strong>Заказ #{order.id}</strong>
+                              </div>
+                              <div className="col-md-3">
+                                {formatDate(order.order_date)}
+                              </div>
+                              <div className="col-md-3">
+                                {parseFloat(order.total_price).toFixed(2)} ₽
+                              </div>
+                              <div className="col-md-3">
+                                <span className={getStatusBadge(order.status)}>
+                                  {getStatusDisplay(order.status)}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                      ) : (
-                        <div>
-                          <i className="bi bi-check-circle me-2"></i>
-                          Оформить продажу
-                        </div>
-                      )}
-                    </button>
-                    <button
-                      className="btn btn-outline-secondary"
-                      onClick={handleOnCancel}
-                      disabled={loading}
-                    >
-                      <i className="bi bi-trash me-2"></i>
-                      Очистить 
-                    </button>
+                      ))}
+                    </div>
+                  )}
                   </div>
                 </div>
               )}
+
+              <div className="mb-4">
+                <h6>Товары в заказе</h6>
+                {cart.length === 0 ? (
+                  <div className="text-center py-4 text-muted">
+                    <i className="bi bi-cart display-6"></i>
+                    <p>Товары не добавлены</p>
+                  </div>
+                ) : (
+                  <div className="cart-items">
+                    {cart.map(item => (
+                      <div key={item.product.id} className="cart-item card mb-2">
+                        <div className="card-body">
+                          <div className="row align-items-center">
+                            <div className="col-md-5">
+                              <div className="product-name">{item.product.name}</div>
+                            </div>
+                            <div className="col-md-3">
+                              <input
+                                type="number"
+                                className="form-control form-control-sm"
+                                value={item.quantity}
+                                onChange={(e) => handleUpdateQuantity(item.product.id, e.target.value)}
+                                min="0.1"
+                                step={item.product.unit ===  UNITS.PIECES ? '1' : '0.1'}
+                              />
+                            </div>
+                            <div className="col-md-2 text-end">
+                              {parseFloat(item.product.price * item.quantity).toFixed(2)} ₽
+                            </div>
+                            <div className="col-md-2 text-end">
+                              <button
+                                className="btn btn-outline-danger btn-sm"
+                                onClick={() => handleRemoveFromCart(item.product.id)}
+                              >
+                                <i className="bi bi-trash"></i>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+
+                    <div className="cart-total card mt-3">
+                      <div className="card-body">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <strong>Итого:</strong>
+                          <strong className="text-primary">
+                            {getTotalPrice().toFixed(2)} ₽
+                          </strong>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="d-grid gap-2 mt-3">
+                      <button
+                        className="btn btn-success"
+                        onClick={handleSubmit}
+                        disabled={loading || !selectedCustomerID || cart.length === 0}
+                      >
+                        {loading ? (
+                          <div>
+                            <span className="spinner-border spinner-border-sm me-2"></span>
+                            Оформление...
+                          </div>
+                        ) : (
+                          <div>
+                            <i className="bi bi-check-circle me-2"></i>
+                            Оформить продажу
+                          </div>
+                        )}
+                      </button>
+                      <button
+                        className="btn btn-outline-secondary"
+                        onClick={handleOnCancel}
+                        disabled={loading}
+                      >
+                        <i className="bi bi-trash me-2"></i>
+                        Очистить 
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

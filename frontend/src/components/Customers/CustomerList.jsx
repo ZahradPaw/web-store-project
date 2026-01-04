@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getUsers } from '../../endpoints/api';
+import { getUsers, deleteUser } from '../../endpoints/api';
 import ErrorRetryComponent from '../ErrorRetryComponent';
 import LoadingComponent from '../LoadingComponent';
 import SearchBar from '../SearchBar';
 import { formatDate } from '../../utils/utils';
+import CustomerAddForm from './CustomerAddForm';
 import './Customers.css';
 
 // Компонент списка клиентов
@@ -13,6 +14,7 @@ const CustomerList = () => {
   const [customers_filter, setCustomersFilter] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [is_show_form, setShowForm] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,13 +38,42 @@ const CustomerList = () => {
 
   // Перенаправление на страницу регистрации клиента
   const handleAddCustomer = () => {
-    navigate('/customers/register');
+    setShowForm(true);
   };
 
   // Перенаправление на страницу с информацией о клиенте
   const handleCustomerSelect = (customer) => {
     navigate(`/customers/detail/${customer.id}`);
   };
+
+  // Удаление покупателя
+  const handleDeleteCustomer = async (customer) => {
+    if (!window.confirm(
+      `Вы уверены, что хотите удалить покупателя ${customer.first_name} ${customer.last_name}?`
+    )) {
+      return;  
+    }
+
+    setLoading(true);
+    setError('');
+    
+    const result = await deleteUser(customer.id);
+
+    if (result.success) {
+      // Перезагрузка покупателей
+      loadCustomers();
+    }
+    else {
+      setError(result.error);
+    }
+    setLoading(false);
+  }
+
+  // Обновление каталога при добавлении покупателя через форму 
+  const handleSubmit = async () => {
+    setShowForm(false);
+    loadCustomers();
+  }
 
   // Фильтр поиска покупателей по имени
   const onSearch = (filter) => {
@@ -120,6 +151,12 @@ const CustomerList = () => {
                         >
                           <i className="bi bi-pencil"></i>
                         </button>
+                        <button
+                          className="btn btn-outline-danger"
+                          onClick={() => handleDeleteCustomer(customer)}
+                        >
+                          <i className="bi bi-trash"></i>
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -134,21 +171,28 @@ const CustomerList = () => {
 
   return (
     <div className="sales-container">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="d-flex justify-content-between align-items-center">
         <div>
           <h2 className="page-title">Покупатели</h2>
           <p className="text-muted">
             Найдено покупателей: {customers.length}
           </p>
         </div>
-        <button
-          className="btn btn-primary"
-          onClick={handleAddCustomer}
-        >
-          <i className="bi bi-person-plus me-2"></i>
-          Добавить покупателя
-        </button>
+        {!is_show_form &&
+          <button
+            className="btn btn-primary"
+            onClick={handleAddCustomer}
+          >
+            <i className="bi bi-person-plus me-2"></i>
+            Добавить покупателя
+          </button>
+        }
       </div>
+
+      {is_show_form && <CustomerAddForm 
+        onSubmit={handleSubmit} 
+        onCancel={() => setShowForm(false)} 
+      />}
 
       <SearchBar onSearch={onSearch} placeholder='Поиск по имени...' />
 

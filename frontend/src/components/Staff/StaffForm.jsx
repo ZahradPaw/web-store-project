@@ -21,8 +21,6 @@ const StaffForm = ({ staff }) => {
       setFormData({
         username: staff.username || '',
         email: staff.email || '',
-        password: '',
-        password2: '',
         first_name: staff.first_name || '',
         last_name: staff.last_name || '',
         phone: staff.phone || '',
@@ -180,7 +178,6 @@ const StaffForm = ({ staff }) => {
             )}
 
             <div className="row">
-
               <ErrorComponent error={error} />
 
               <div className="mb-3">

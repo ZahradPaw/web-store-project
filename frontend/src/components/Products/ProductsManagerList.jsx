@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getProducts } from '../../endpoints/api';
+import { getProducts, deleteProduct } from '../../endpoints/api';
 import ErrorRetryComponent from '../ErrorRetryComponent';
 import LoadingComponent from '../LoadingComponent';
 import SearchBar from '../SearchBar';
 import { getUnitDisplay, UNITS } from '../../utils/product';
+import ProductAddForm from './ProductAddForm';
 import './Products.css';
 
 // Компонент списка товаров для управления ими
@@ -13,6 +14,7 @@ const ProductsManagerList = () => {
   const [products_filter, setProductsFilter] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [is_show_form, setShowForm] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,15 +35,44 @@ const ProductsManagerList = () => {
     setLoading(false);
   };
 
-  // Перенаправление на страницу добавления товара
+  // Появление формы добавления товара
   const handleAddProduct = () => {
-    navigate('/products/create'); 
+    setShowForm(true);
   };
 
   // Перенаправление на страницу управления товаром
   const handleEditProduct = (product) => {
     navigate(`/products/detail/${product.id}`); 
   };
+
+  // Удаление товара
+  const handleDeleteProduct = async (product) => {
+    if (!window.confirm(
+      `Вы уверены, что хотите удалить товар ${product.name}?`
+    )) {
+      return;  
+    }
+
+    setLoading(true);
+    setError('');
+    
+    const result = await deleteProduct(product.id);
+
+    if (result.success) {
+      // Перезагрузка продуктов
+      loadProducts();
+    }
+    else {
+      setError(result.error);
+    }
+    setLoading(false);
+  }
+
+  // Обновление каталога при добавлении товара через форму 
+  const handleSubmit = async () => {
+    setShowForm(false);
+    loadProducts();
+  }
 
   // Фильтр поиска товаров по названию
   const onSearch = (filter) => {
@@ -123,6 +154,12 @@ const ProductsManagerList = () => {
                         >
                           <i className="bi bi-pencil"></i>
                         </button>
+                        <button
+                          className="btn btn-outline-danger"
+                          onClick={() => handleDeleteProduct(product)}
+                        >
+                          <i className="bi bi-trash"></i>
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -137,21 +174,28 @@ const ProductsManagerList = () => {
 
   return (
     <div className="products-manager">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="d-flex justify-content-between align-items-center">
         <div>
-          <h2 className="page-title">Управление товарами</h2>
+          <h2 className="page-title">Товары</h2>
           <p className="text-muted">
             Найдено товаров: {products.length}
           </p>
         </div>
-        <button
-          className="btn btn-primary"
-          onClick={handleAddProduct}
-        >
-          <i className="bi bi-plus-circle me-2"></i>
-          Добавить товар
-        </button>
+        {!is_show_form &&
+          <button
+            className="btn btn-primary"
+            onClick={handleAddProduct}
+          >
+            <i className="bi bi-plus-circle me-2"></i>
+            Добавить товар
+          </button>
+        }
       </div>
+
+      {is_show_form && <ProductAddForm 
+        onSubmit={handleSubmit} 
+        onCancel={() => setShowForm(false)} 
+      />}
 
       <SearchBar onSearch={onSearch} />
 

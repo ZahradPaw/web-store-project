@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import generics, permissions
 from .models import User
 from .serializers import UserListSerializer, UserProfileSerializer, UserRegistrationSerializer
-from .permissions import IsStaffUser, IsAdminOrStaffReadOnly
+from .permissions import IsStaffUser
 
 
 class UserListView(generics.ListAPIView):
@@ -13,7 +13,7 @@ class UserListView(generics.ListAPIView):
 
     def get_queryset(self):
         # Получение пользователей, содержащих указанные символы через параметр name
-        name = self.request.query_params.get('name')
+        name = self.request.query_params.get('name', '')
         # Получение пользователей по роли через параметр role
         role = self.request.query_params.get('role')
 
@@ -52,4 +52,4 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     """Управление пользователем"""
     queryset = User.objects.all()
     serializer_class = UserListSerializer
-    permission_classes = (IsAdminOrStaffReadOnly,)
+    permission_classes = (IsStaffUser,)

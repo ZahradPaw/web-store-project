@@ -1,16 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ErrorComponent from '../ErrorComponent';
-import { register } from '../../endpoints/api';
+import { register, updateUser, deleteUser } from '../../endpoints/api';
 import { createDefaultUser } from '../../utils/user';
 import './Customers.css';
 
-// Форма добавления клиента сотрудником
-const CustomerForm = () => {
+// Форма добавления и редактирования покупателя 
+const CustomerForm = ({ customer }) => {
+  // Если параметром передан customer, то осуществляется редактирование данных покупателя
+  // В ином случае идет добавление нового покупателя
+
   const [formData, setFormData] = useState(createDefaultUser());
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (customer) {
+      setFormData({
+        username: customer.username || '',
+        email: customer.email || '',
+        first_name: customer.first_name || '',
+        last_name: customer.last_name || '',
+        phone: customer.phone || '',
+        date_of_birth: customer.date_of_birth || ''
+      });
+    }
+  }, [customer]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -71,28 +88,79 @@ const CustomerForm = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (validateForm()) {
 
-    setLoading(true);
-    setErrors({});
+      setLoading(true);
+      setError('');
+      setErrors({}); 
 
-    // Создание нового клиента
+      if (customer) {
+        await updateCurrentCustomer();
+      } 
+      else {
+        await createNewCustomer(); 
+      }
+      setLoading(false);
+    }
+  };
+
+  // Добавление нового покупателя
+  const createNewCustomer = async () => {
     const result = await register(formData);
-
+  
     if (result.success) {
+      // Перенаправление на страницу со списком покупателей
       navigate('/customers/list');
     }
     else {
-      setErrors({ submit: result.error });
+      setError(result.error);
+    }
+  } 
+  
+  // Обновление текущего покупателя
+  const updateCurrentCustomer = async () => {
+    const result = await updateUser(customer.id, formData);
+  
+    if (result.success) {
+      // Перенаправление на страницу со списком покупателей
+      navigate('/customers/list');
+    }
+    else {
+      setError(result.error);
+    }
+  }
+  
+  // Удаление текущего покупателя
+  const deleteCustomer = async () => {
+    setLoading(true);
+    setError('');
+      
+    const result = await deleteUser(customer.id);
+  
+    if (result.success) {
+      // Перенаправление на страницу со списком покупателей
+      navigate('/customers/list');
+    }
+    else {
+      setError(result.error);
     }
     setLoading(false);
-  };
+  }
 
   // Отмена 
   const onCancel = () => {
     navigate('/customers/list'); 
+  }
+
+  // Функция кнопки удаления покупателя
+  const onDelete = async () => {
+    if (window.confirm(
+      `Вы уверены, что хотите удалить покупателя ${customer.first_name} ${customer.last_name}?`
+    )) {
+      await deleteCustomer();  
+    }
   }
 
   return (
@@ -101,154 +169,166 @@ const CustomerForm = () => {
         <div className="card-header">
           <h5 className="card-title mb-0">
             <i className="bi bi-person-plus me-2"></i>
-            Добавление нового покупателя
+            {customer ? 'Редактирование покупателя' : 'Добавление нового покупателя'}
           </h5>
         </div>
         <div className="card-body">
           <form onSubmit={handleSubmit}>
-            <ErrorComponent error={errors.submit} />
+            {errors.submit && (
+              <div className="alert alert-danger">
+                <i className="bi bi-exclamation-triangle me-2"></i>
+                {errors.submit}
+              </div>
+            )}
 
             <div className="row">
-              <div className="mb-3">
-                <label htmlFor="username" className="form-label">
-                  Логин *
-                </label>
-                <input
-                  type="text"
-                  className={`form-control ${errors.username ? 'is-invalid' : ''}`}
-                  id="username"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  placeholder="Введите логин"
-                />
-                {errors.username && (
-                  <div className="invalid-feedback">{errors.username}</div>
-                )}
-              </div>
+              <ErrorComponent error={error} />
 
-              <div className="mb-3">
-                <label htmlFor="password" className="form-label">
-                  Пароль *
-                </label>
-                <input
-                  type="password"
-                  className={`form-control ${errors.password ? 'is-invalid' : ''}`}
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Минимум 6 символов"
-                />
-                {errors.password && (
-                  <div className="invalid-feedback">{errors.password}</div>
-                )}
-              </div>
+              <div className="row">
+                <div className="mb-2">
+                  <label htmlFor="username" className="form-label">
+                    Логин *
+                  </label>
+                  <input
+                    type="text"
+                    className={`form-control ${errors.username ? 'is-invalid' : ''}`}
+                    id="username"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    placeholder="Введите логин"
+                  />
+                  {errors.username && (
+                    <div className="invalid-feedback">{errors.username}</div>
+                  )}
+                </div>
 
-              <div className="mb-3">
-                <label htmlFor="password2" className="form-label">
-                  Подтверждение пароля *
-                </label>
-                <input
-                  type="password"
-                  className={`form-control ${errors.password2 ? 'is-invalid' : ''}`}
-                  id="password2"
-                  name="password2"
-                  value={formData.password2}
-                  onChange={handleChange}
-                  placeholder="Повторите пароль"
-                />
-                {errors.password2 && (
-                  <div className="invalid-feedback">{errors.password2}</div>
-                )}
-              </div>
+                <div className="mb-2">
+                  <label htmlFor="email" className="form-label">
+                    Email *
+                  </label>
+                  <input
+                    type="email"
+                    className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="email@example.com"
+                  />
+                  {errors.email && (
+                    <div className="invalid-feedback">{errors.email}</div>
+                  )}
+                </div>
 
-              <div className="mb-3">
-                <label htmlFor="email" className="form-label">
-                  Email *
-                </label>
-                <input
-                  type="email"
-                  className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="email@example.com"
-                />
-                {errors.email && (
-                  <div className="invalid-feedback">{errors.email}</div>
+                {!customer && (
+                  <div>
+                    <div className="mb-2">
+                      <label htmlFor="password" className="form-label">
+                        Пароль *
+                      </label>
+                      <input
+                        type="password"
+                        className={`form-control ${errors.password ? 'is-invalid' : ''}`}
+                        id="password"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        placeholder="Минимум 6 символов"
+                      />
+                      {errors.password && (
+                        <div className="invalid-feedback">{errors.password}</div>
+                      )}
+                    </div>
+                    <div className="mb-2">
+                      <label htmlFor="password2" className="form-label">
+                        Подтверждение пароля *
+                      </label>
+                      <input
+                        type="password"
+                        className={`form-control ${errors.password2 ? 'is-invalid' : ''}`}
+                        id="password2"
+                        name="password2"
+                        value={formData.password2}
+                        onChange={handleChange}
+                        placeholder="Повторите пароль"
+                      />
+                      {errors.password2 && (
+                        <div className="invalid-feedback">{errors.password2}</div>
+                      )}
+                    </div>
+                  </div>
                 )}
-              </div>
 
-              <div className="mb-3">
-                <label htmlFor="first_name" className="form-label">
-                  Имя *
-                </label>
-                <input
-                  type="text"
-                  className={`form-control ${errors.first_name ? 'is-invalid' : ''}`}
-                  id="first_name"
-                  name="first_name"
-                  value={formData.first_name}
-                  onChange={handleChange}
-                  placeholder="Введите имя"
-                />
-                {errors.first_name && (
-                  <div className="invalid-feedback">{errors.first_name}</div>
-                )}
-              </div>
+                <div className="mb-2">
+                  <label htmlFor="first_name" className="form-label">
+                    Имя *
+                  </label>
+                  <input
+                    type="text"
+                    className={`form-control ${errors.first_name ? 'is-invalid' : ''}`}
+                    id="first_name"
+                    name="first_name"
+                    value={formData.first_name}
+                    onChange={handleChange}
+                    placeholder="Введите имя"
+                  />
+                  {errors.first_name && (
+                    <div className="invalid-feedback">{errors.first_name}</div>
+                  )}
+                </div>
 
-              <div className="mb-3">
-                <label htmlFor="last_name" className="form-label">
-                  Фамилия *
-                </label>
-                <input
-                  type="text"
-                  className={`form-control ${errors.last_name ? 'is-invalid' : ''}`}
-                  id="last_name"
-                  name="last_name"
-                  value={formData.last_name}
-                  onChange={handleChange}
-                  placeholder="Введите фамилию"
-                />
-                {errors.last_name && (
-                  <div className="invalid-feedback">{errors.last_name}</div>
-                )}
-              </div>
-              
-              <div className="mb-3">
-                <label htmlFor="phone" className="form-label">
-                  Телефон *
-                </label>
-                <input
-                  type="tel"
-                  className="form-control"
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="+7 (999) 999-99-99"
-                />
-                {errors.username && (
-                  <div className="invalid-feedback">{errors.phone}</div>
-                )}
-              </div>
+                <div className="mb-2">
+                  <label htmlFor="last_name" className="form-label">
+                    Фамилия *
+                  </label>
+                  <input
+                    type="text"
+                    className={`form-control ${errors.last_name ? 'is-invalid' : ''}`}
+                    id="last_name"
+                    name="last_name"
+                    value={formData.last_name}
+                    onChange={handleChange}
+                    placeholder="Введите фамилию"
+                  />
+                  {errors.last_name && (
+                    <div className="invalid-feedback">{errors.last_name}</div>
+                  )}
+                </div>
+                
+                <div className="mb-2">
+                  <label htmlFor="phone" className="form-label">
+                    Телефон *
+                  </label>
+                  <input
+                    type="tel"
+                    className="form-control"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="+7 (999) 999-99-99"
+                  />
+                  {errors.username && (
+                    <div className="invalid-feedback">{errors.phone}</div>
+                  )}
+                </div>
 
-              <div className="mb-3">
-                <label htmlFor="date_of_birth" className="form-label">
-                  Дата рождения *
-                </label>
-                <input
-                  type="date"
-                  className="form-control"
-                  name="date_of_birth"
-                  value={formData.date_of_birth}
-                  onChange={handleChange}
-                />
-                {errors.username && (
-                  <div className="invalid-feedback">{errors.date_of_birth}</div>
-                )}
+                <div className="mb-2">
+                  <label htmlFor="date_of_birth" className="form-label">
+                    Дата рождения *
+                  </label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    name="date_of_birth"
+                    value={formData.date_of_birth}
+                    onChange={handleChange}
+                  />
+                  {errors.username && (
+                    <div className="invalid-feedback">{errors.date_of_birth}</div>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -266,10 +346,20 @@ const CustomerForm = () => {
                 ) : (
                   <div>
                     <i className="bi bi-check-circle me-2"></i>
-                    Добавить покупателя
+                    {customer ? 'Сохранить изменения' : 'Добавить покупателя'}
                   </div>
                 )}
               </button>
+              {customer && (
+                <button
+                  type="button"
+                  className="btn btn-outline-danger"
+                  onClick={onDelete}
+                >
+                  <i className="bi bi-trash me-2"></i>
+                  Удалить покупателя
+                </button>
+              )}
               <button
                 type="button"
                 className="btn btn-outline-secondary"

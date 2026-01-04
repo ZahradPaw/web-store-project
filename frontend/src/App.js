@@ -1,4 +1,5 @@
 import React from 'react';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
@@ -21,8 +22,8 @@ import OrderDetailPage from './pages/OrderDetailPage';
 import ProfilePage from './pages/ProfilePage';
 import CartPage from './pages/CartPage';
 import CustomersPage from './pages/CustomersPage';
-import CustomerDetailPage from './pages/CustomerDetailPage';
 import CustomerCreatePage from './pages/CustomerCreatePage';
+import CustomerDetailManagerPage from './pages/CustomerDetailManagerPage';
 import OrdersManagerPage from './pages/OrdersManagerPage';
 import OrderDetailManagerPage from './pages/OrderDetailManagerPage';
 import OrderCreatePage from './pages/OrderCreatePage';
@@ -118,7 +119,7 @@ const AppContent = () => {
               path="/customers/detail/:id"
               element={
                 <PrivateRoute>
-                  <CustomerDetailPage />
+                  <CustomerDetailManagerPage />
                 </PrivateRoute>
               }
             />

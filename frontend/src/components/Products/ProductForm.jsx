@@ -159,7 +159,7 @@ const ProductForm = ({ product }) => {
 
               <ErrorComponent error={error} />
               
-              <div className="mb-3">
+              <div className="mb-2">
                 <label htmlFor="name" className="form-label">
                   Название товара *
                 </label>
@@ -177,7 +177,7 @@ const ProductForm = ({ product }) => {
                 )}
               </div>
 
-              <div className="mb-3">
+              <div className="mb-2">
                 <label htmlFor="price" className="form-label">
                   Цена (₽) *
                 </label>
@@ -196,7 +196,7 @@ const ProductForm = ({ product }) => {
                   <div className="invalid-feedback">{errors.price}</div>
                 )}
               </div>
-              <div className="mb-3">
+              <div className="mb-2">
                 <label htmlFor="unit" className="form-label">
                   Единица измерения *
                 </label>
@@ -212,8 +212,7 @@ const ProductForm = ({ product }) => {
                   <option value="liter">Литры</option>
                 </select>
               </div>
-
-              <div className="mb-3">
+              <div className="mb-2">
                 <label htmlFor="quantity" className="form-label">
                   Количество на складе *
                 </label>
@@ -233,10 +232,7 @@ const ProductForm = ({ product }) => {
                 )}
               </div>
             </div>
-
-           
-
-            <div className="mb-3">
+            <div className="mb-2">
               <label htmlFor="description" className="form-label">
                 Описание товара
               </label>

@@ -1,31 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import ProductForm from '../components/Products/ProductForm';
+import CustomerForm from '../components/Customers/CustomerForm';
 import LoadingComponent from '../components/LoadingComponent';
 import ErrorRetryComponent from '../components/ErrorRetryComponent';
-import { getProduct } from '../endpoints/api';
+import { getUser } from '../endpoints/api';
 
-// Страница управления деталями товара
-const ProductDetailManagerPage = () => {
+// Страница управления данными покупателя
+const CustomerDetailManagerPage = () => {
   const { id } = useParams();
-  const [product, setProduct] = useState(null);
+  const [customer, setCustomer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    loadProduct();
+    loadCustomer();
   }, [id]);
 
-  // Загрузка товара
-  const loadProduct = async () => {
+  // Загрузка данных покупателя
+  const loadCustomer = async () => {
     setLoading(true);
     setError(''); 
     
-    const result = await getProduct(id);
+    const result = await getUser(id);
 
     if (result.success) {
-      setProduct(result.data)
+      setCustomer(result.data)
     }
     else {
       setError(result.error);
@@ -48,7 +48,7 @@ const ProductDetailManagerPage = () => {
       <div className="container py-4">
         <ErrorRetryComponent 
           error={error}
-          onClick={loadProduct}
+          onClick={loadCustomer}
         />
       </div>
     );
@@ -60,17 +60,17 @@ const ProductDetailManagerPage = () => {
         <div className="col-12">
           <button
             className="btn btn-outline-secondary mb-3"
-            onClick={() => navigate('/products/list')}
+            onClick={() => navigate('/customers/list')}
           >
             <i className="bi bi-arrow-left me-2"></i>
-            Назад к списку товаров
+            Назад к списку покупателей
           </button>
         </div>
       </div>
 
-      <ProductForm product={product} />
+      <CustomerForm customer={customer} />
     </div>
   );
 };
 
-export default ProductDetailManagerPage;
+export default CustomerDetailManagerPage;

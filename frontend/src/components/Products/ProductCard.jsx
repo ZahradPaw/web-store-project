@@ -71,7 +71,7 @@ const ProductCard = ({ product, onAddToCart }) => {
                 step={product.unit === UNITS.PIECES ? '1' : '0.1'}
               />
               <button
-                className="btn add-to-cart-btn text-white btn-sm flex-grow-1"
+                className="btn text-white btn-sm flex-grow-1 add-to-cart-btn"
                 onClick={handleAddToCart}
                 disabled={parseFloat(quantity) > parseFloat(product.quantity)}
               >

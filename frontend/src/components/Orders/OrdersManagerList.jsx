@@ -4,6 +4,7 @@ import { getOrders } from '../../endpoints/api';
 import LoadingComponent from '../LoadingComponent';
 import ErrorRetryComponent from '../ErrorRetryComponent';
 import SearchBar from '../SearchBar';
+import { getUnitDisplay } from '../../utils/product';
 import { getStatusDisplay, getStatusBadge } from '../../utils/order';
 import { formatDate } from '../../utils/utils';
 import './Orders.css';
@@ -14,6 +15,7 @@ const OrdersManagerList = () => {
   const [customers_filter, setCustomersFilter] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [expandedOrders, setExpandedOrders] = useState(new Set());
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,6 +46,17 @@ const OrdersManagerList = () => {
   const onSearch = (filter) => {
     setCustomersFilter(filter); 
   }
+
+  // Развернуть/свернуть товары в заказе
+  const toggleOrderExpansion = (orderId) => {
+    const newExpanded = new Set(expandedOrders);
+    if (newExpanded.has(orderId)) {
+      newExpanded.delete(orderId);
+    } else {
+      newExpanded.add(orderId);
+    }
+    setExpandedOrders(newExpanded);
+  };
 
   const loadingContent = (
     <div>
@@ -88,36 +101,103 @@ const OrdersManagerList = () => {
                   <th>Статус</th>
                   <th>Доставка</th>
                   <th>Действия</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
-                {orders.map(order => (
-                  <tr key={order.id} className="order-row">
-                    <td>#{order.id}</td>
-                    <td>{order.client_name}</td>
-                    <td>{formatDate(order.order_date)}</td>
-                    <td>{parseFloat(order.total_price).toFixed(2)} ₽</td>
-                    <td>
-                      <span className={getStatusBadge(order.status)}>
-                        {getStatusDisplay(order.status)}
-                      </span>
-                    </td>
-                    <td>
-                      {order.delivery_date ? 
-                        formatDate(order.delivery_date) : 
-                        'Не указана'
-                      }
-                    </td>
-                    <td>
-                      <button
-                        className="btn btn-outline-primary btn-sm"
-                        onClick={() => handleOrderSelect(order)}
-                      >
-                        <i className="bi bi-eye"></i>
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {orders.map(order => {
+                  const isExpanded = expandedOrders.has(order.id);
+
+                  return (
+                    <React.Fragment key={order.id}>
+                      <tr className="order-row">
+                        <td>#{order.id}</td>
+                        <td>{order.client_name}</td>
+                        <td>{formatDate(order.order_date)}</td>
+                        <td>{parseFloat(order.total_price).toFixed(2)} ₽</td>
+                        <td>
+                          <span className={getStatusBadge(order.status)}>
+                            {getStatusDisplay(order.status)}
+                          </span>
+                        </td>
+                        <td>
+                          {order.delivery_date ? 
+                            formatDate(order.delivery_date) : 
+                            'Не указана'
+                          }
+                        </td>
+                        <td>
+                          <button
+                            className="btn btn-outline-primary btn-sm"
+                            onClick={() => handleOrderSelect(order)}
+                          >
+                            <i className="bi bi-pencil"></i>
+                          </button>
+                        </td>
+                        <td>
+                          <button
+                            className="btn btn-sm btn-outline-secondary"
+                            onClick={() => toggleOrderExpansion(order.id)}
+                            title={isExpanded ? 'Свернуть товары' : 'Развернуть товары'}
+                          >
+                            <i className={`bi ${isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'}`}></i>
+                          </button>
+                        </td>
+                      </tr>
+
+                      {/* Строка с товарами заказа */}
+                      {isExpanded && order.items && (
+                        <tr className="order-details-row">
+                          <td colSpan='10'>
+                            <div className="order-items-container">
+                              <div className="table-responsive">
+                                <table className="table table-sm table-bordered">
+                                  <thead>
+                                    <tr>
+                                      <th>Товар</th>
+                                      <th>Количество</th>
+                                      <th>Цена за ед.</th>
+                                      <th>Общая цена</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {order.items.map((item, index) => (
+                                      <tr key={index}>
+                                        <td>
+                                          <div>
+                                            <strong>{item.product_name || 'Товар'}</strong>
+                                            {item.product_unit && (
+                                              <small className="text-muted ms-2">
+                                                ({getUnitDisplay(item.product_unit)})
+                                              </small>
+                                            )}
+                                          </div>
+                                        </td>
+                                        <td>
+                                          {parseFloat(item.quantity)}
+                                        </td>
+                                        <td>
+                                          {parseFloat(item.price || item.unit_price || 0).toFixed(2)} ₽
+                                        </td>
+                                        <td>
+                                          <strong>
+                                            {parseFloat(item.total || (
+                                              item.quantity * (
+                                                item.price || item.unit_price || 0))).toFixed(2)} ₽
+                                          </strong>
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
               </tbody>
             </table>
           </div>

@@ -6,7 +6,7 @@ import { getStatusDisplay, getStatusBadge } from '../../utils/order';
 import { formatDate } from '../../utils/utils';
 import './Customers.css';
 
-// Компонент карточки клиента
+// Компонент карточки клиента с информацией о нем и заказами
 const CustomerDetail = ({ customer }) => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);

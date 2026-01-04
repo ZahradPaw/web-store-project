@@ -5,7 +5,7 @@ import LoadingComponent from '../components/LoadingComponent';
 import ErrorRetryComponent from '../components/ErrorRetryComponent';
 import { getUser } from '../endpoints/api';
 
-// Страница управления деталями товара
+// Страница с информацией о покупателе и его заказах
 const CustomerDetailPage = () => {
   const { id } = useParams();
   const [client, setClient] = useState(null);
@@ -56,7 +56,7 @@ const CustomerDetailPage = () => {
 
   return (
     <div className="container py-4">
-      <div className="row mb-4">
+      <div className="row mb-2">
         <div className="col-12">
           <button
             className="btn btn-outline-secondary mb-3"

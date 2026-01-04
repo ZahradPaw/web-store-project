@@ -69,7 +69,7 @@
 }
 
 .order-items .order-item {
-  padding: 1rem 0;
+  padding: 0;
 }
 
 .order-items .order-item:last-child {
@@ -227,6 +227,7 @@
   border: 2px solid var(--accent-color) !important;
 }
 
+
 /* Стили для таблицы с заказами */
 .orders-table-container {
   background: white;
@@ -243,6 +244,7 @@
   border-bottom: 2px solid #dee2e6;
   font-weight: 600;
   padding: 0.5rem;
+  color: white;
 }
 
 .orders-table tbody td {
@@ -257,3 +259,14 @@
 .order-row:hover {
   background-color: #f8f9fa;
 }
+
+.order-items-container {
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+}
+
+.order-items-container thead th {
+  color: black;
+}
+

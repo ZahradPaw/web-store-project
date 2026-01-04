@@ -16,6 +16,10 @@ const Navigation = () => {
     return location.pathname === path ? 'text-warning' : 'text-light';
   };
 
+  const handleLogin = () => {
+    navigate('/login');
+  };
+
   // Выход из аккаунта и перенаправление на страницу входа
   const handleLogout = () => {
     userLogout();
@@ -24,14 +28,12 @@ const Navigation = () => {
 
   const cartItemsCount = getCartItemsCount();
 
-  // Кнопка для выхода из аккаунта
-  const LogoutButton = () => {
+  // Панель с именем и фамилией пользователя, ролью и кнопкой выхода из аккаунта
+  const AccountPanel = () => {
     return (
-      <div className="d-flex align-items-center">
+      <div className="username-panel d-flex align-items-center">
         <span className="text-light me-3">
-          <small>
-            {user?.first_name || user?.username} {user?.last_name} | {getRoleDisplay(user.role)}
-          </small>
+          {user?.first_name || user?.username} {user?.last_name} | {getRoleDisplay(user.role)}
         </span>
         <button
           onClick={handleLogout}
@@ -54,9 +56,14 @@ const Navigation = () => {
           >
             Каталог
           </Link>
-          <Link to="/login" className="btn btn-outline-light btn-sm log-button">
+        </div>
+        <div className="d-flex align-items-center">
+          <button
+            onClick={handleLogin}
+            className="btn btn-outline-light btn-sm log-button"
+          >
             Войти
-          </Link>
+          </button>
         </div>
       </nav>
     );
@@ -96,7 +103,7 @@ const Navigation = () => {
           </Link>
         </div>
 
-        <LogoutButton />
+        <AccountPanel />
       </nav>
     );
 
@@ -119,7 +126,7 @@ const Navigation = () => {
           </Link>
         </div>
 
-        <LogoutButton />
+        <AccountPanel />
       </nav>
     );
   }
@@ -143,7 +150,7 @@ const Navigation = () => {
           </Link>
         </div>
 
-        <LogoutButton />
+        <AccountPanel />
       </nav>
     );
   }
@@ -173,7 +180,7 @@ const Navigation = () => {
           </Link>
         </div>
 
-        <LogoutButton />
+        <AccountPanel />
       </nav>
     );
   }
@@ -197,7 +204,7 @@ const Navigation = () => {
           </Link>
         </div>
 
-        <LogoutButton />
+        <AccountPanel />
       </nav>
     );
   }
@@ -245,7 +252,7 @@ const Navigation = () => {
           </Link>
         </div>
 
-        <LogoutButton />
+        <AccountPanel />
       </nav>
     );
   }
