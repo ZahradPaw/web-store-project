@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getProducts, deleteProduct } from '../../endpoints/api';
+import { getProducts, deleteProduct, updateProduct } from '../../endpoints/api';
 import ErrorRetryComponent from '../ErrorRetryComponent';
 import LoadingComponent from '../LoadingComponent';
 import SearchBar from '../SearchBar';
@@ -59,7 +59,24 @@ const ProductsManagerList = () => {
     const result = await deleteProduct(product.id);
 
     if (result.success) {
-      // Перезагрузка продуктов
+      loadProducts();
+    }
+    else {
+      setError(result.error);
+    }
+    setLoading(false);
+  }
+
+  // Смена статуса доступности товара
+  const handleAvailableChanging = async (product) => {
+    setLoading(true);
+    setError('');
+    
+    const result = await updateProduct(product.id, { 
+      is_available: !product.is_available
+    });
+
+    if (result.success) {
       loadProducts();
     }
     else {
@@ -126,6 +143,7 @@ const ProductsManagerList = () => {
                   <th>Цена</th>
                   <th>Ед. изм.</th>
                   <th>Количество</th>
+                  <th>Доступен</th>
                   <th>Действия</th>
                 </tr>
               </thead>
@@ -145,6 +163,14 @@ const ProductsManagerList = () => {
                       {product.unit == UNITS.PIECES ?
                         parseInt(product.quantity)
                         : parseFloat(product.quantity).toFixed(2)}
+                    </td>
+                    <td className="product-available">
+                      <input 
+                        className='form-check-input' 
+                        type='checkbox' 
+                        checked={product.is_available}
+                        onChange={() => handleAvailableChanging(product)}
+                      />
                     </td>
                     <td>
                       <div className="btn-group btn-group-sm">

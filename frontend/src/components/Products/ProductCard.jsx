@@ -10,6 +10,15 @@ const ProductCard = ({ product, onAddToCart }) => {
   const { isAuthenticated } = useAuthContext();
   const navigate = useNavigate();
 
+  // Получение URL изображения
+  const getImageUrl = () => {
+    if (!product.photo) return null;
+
+    return `${process.env.REACT_APP_API_URL || ''}${product.photo}`;
+  };
+
+  const imageUrl = getImageUrl();
+
   // Добавление товара в корзину
   const handleAddToCart = () => {
     if (!isAuthenticated) {
@@ -29,9 +38,16 @@ const ProductCard = ({ product, onAddToCart }) => {
 
   return (
     <div className="card product-card">
-      {/* Заглушка для картинки */}
       <div className="product-image" onClick={handleProductClick}>
-        <i className="bi bi-image"></i>
+        {product.photo ? (
+          <img
+            src={imageUrl}
+            alt={product.name}
+            loading="lazy"
+          />
+        ) : (
+          <i className="bi bi-image"></i>
+        )}
       </div>
 
       <div className="card-body d-flex flex-column">
@@ -40,9 +56,6 @@ const ProductCard = ({ product, onAddToCart }) => {
           <span className="badge bg-secondary product-badge">
             {getUnitDisplay(product.unit)}
           </span>
-          {product.is_available && (
-            <span className="badge bg-success product-badge ms-1">В наличии</span>
-          )}
         </div>
 
         <p className="card-text text-muted small flex-grow-1">

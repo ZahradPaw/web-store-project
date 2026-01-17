@@ -9,12 +9,16 @@ import './Products.css';
 const ProductForm = ({ product }) => {
   // Если параметром передан product, то осуществляется редактирование данного товара
   // В ином случае идет добавление нового товара
-
   const [formData, setFormData] = useState(createDefaultProduct);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [errors, setErrors] = useState({});
+  const [previewImage, setPreviewImage] = useState(product.photo);
   const navigate = useNavigate();
+
+  // Ограничения изображения
+  const validImageTypes = ['image/jpeg', 'image/png'];
+  const maxImageSize = 5 * 1024 * 1024; // 5 MB
 
   useEffect(() => {
     if (product) {
@@ -23,23 +27,64 @@ const ProductForm = ({ product }) => {
         price: product.price || '',
         unit: product.unit || UNITS.PIECES,
         quantity: product.quantity || '',
-        description: product.description || ''
+        description: product.description || '',
+        photo: product.photo || ''
       });
     }
   }, [product]);
 
   const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    // Очистка ошибки при изменений полей
-    if (errors[name]) {
-      setErrors(prev => ({
+    const { name, value, type, files } = event.target;
+    
+    if (type === 'file') {
+      const file = files[0];
+      // Валидация файла
+      if (file) {
+        
+        if (!validImageTypes.includes(file.type)) {
+          setErrors(prev => ({
+            ...prev,
+            photo: 'Допустимые форматы: JPG, PNG'
+          }));
+          return;
+        }
+        
+        if (file.size > maxImageSize) {
+          setErrors(prev => ({
+            ...prev,
+            photo: 'Максимальный размер файла: 5MB'
+          }));
+          return;
+        }
+        
+        setPreviewImage(URL.createObjectURL(file));
+
+        setFormData(prev => ({
+          ...prev,
+          [name]: file
+        }));
+        
+        // Очистка ошибки
+        if (errors.photo) {
+          setErrors(prev => ({
+            ...prev,
+            photo: ''
+          }));
+        }
+      }
+    } else {
+      setFormData(prev => ({
         ...prev,
-        [name]: ''
+        [name]: value
       }));
+      
+      // Очистка ошибки при изменений полей
+      if (errors[name]) {
+        setErrors(prev => ({
+          ...prev,
+          [name]: ''
+        }));
+      }
     }
   };
 
@@ -82,7 +127,20 @@ const ProductForm = ({ product }) => {
       else {
         await createNewProduct(); 
       }
+
       setLoading(false);
+    }
+  };
+
+  // Удаление текущего изображения
+  const handleRemoveImage = () => {
+    setPreviewImage(null);
+    
+    if (product) {
+      setFormData(prev => ({
+        ...prev,
+        photo: ''
+      }));
     }
   };
 
@@ -107,6 +165,7 @@ const ProductForm = ({ product }) => {
   // Обновление текущего продукта
   const updateCurrentProduct = async () => {
     const result = await updateProduct(product.id, formData);
+    console.log(formData.photo);
 
     if (result.success) {
       // Перенаправление на страницу со списком товаров
@@ -158,6 +217,54 @@ const ProductForm = ({ product }) => {
             <div className="row">
 
               <ErrorComponent error={error} />
+
+              <div className="mb-4">
+                <label className="form-label d-block">
+                  Фото товара
+                </label>
+                
+                <div className="image-upload-container">
+                  {previewImage ? (
+                    <div className="image-preview">
+                      <img 
+                        src={previewImage} 
+                        alt="Превью" 
+                        className="img-thumbnail"
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-danger remove-image-btn"
+                        onClick={handleRemoveImage}
+                        title="Удалить фото"
+                      >
+                        <i className="bi bi-x"></i>
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="image-upload-placeholder">
+                      <i className="bi bi-image text-muted"></i>
+                      <span className="ms-2">Нет фото</span>
+                    </div>
+                  )}
+                  
+                  <div className="mt-3">
+                    <input
+                      type="file"
+                      className={`form-control ${errors.photo ? 'is-invalid' : ''}`}
+                      id="photo"
+                      name="photo"
+                      accept="image/jpeg,image/png"
+                      onChange={handleChange}
+                    />
+                    {errors.photo && (
+                      <div className="invalid-feedback d-block">{errors.photo}</div>
+                    )}
+                    <div className="form-text">
+                      Поддерживаются JPG и PNG до 5MB
+                    </div>
+                  </div>
+                </div>
+              </div>
               
               <div className="mb-2">
                 <label htmlFor="name" className="form-label">

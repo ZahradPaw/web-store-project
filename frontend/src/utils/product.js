@@ -4,7 +4,8 @@ export const createDefaultProduct = () => ({
   price: '',
   unit: UNITS.PIECES,
   quantity: '',
-  description: ''
+  description: '',
+  photo: ''
 });
 
 // Единицы измерения товара

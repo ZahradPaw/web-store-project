@@ -19,9 +19,13 @@ class User(AbstractUser):
                             choices=Roles.choices,
                             default=Roles.CLIENT,
                             verbose_name="Роль")
-    date_of_birth = models.DateField(blank=True, null=True, verbose_name="Дата рождения")
-    phone = models.CharField(max_length=20, verbose_name="Телефон")
-    is_regular = models.BooleanField(default=False, verbose_name="Постоянный клиент")
+    date_of_birth = models.DateField(blank=True,
+                                     null=True,
+                                     verbose_name="Дата рождения")
+    phone = models.CharField(max_length=20,
+                             verbose_name="Телефон")
+    is_regular = models.BooleanField(default=False,
+                                     verbose_name="Постоянный клиент")
     total_spent = models.DecimalField(max_digits=10,
                                       decimal_places=2,
                                       default=0,

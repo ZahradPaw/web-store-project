@@ -5,7 +5,7 @@ import ErrorComponent from '../ErrorComponent';
 import ErrorRetryComponent from '../ErrorRetryComponent';
 import { getOrder, cancelOrder } from '../../endpoints/api';
 import { getUnitDisplay } from '../../utils/product';
-import { getStatusDisplay, getStatusBadge } from '../../utils/order';
+import { getStatusDisplay, getStatusBadge, STATUSES } from '../../utils/order';
 import { formatDate, formatDateTime } from '../../utils/utils';
 import './Orders.css';
 
@@ -45,7 +45,7 @@ const OrderDetail = ({ order_id }) => {
 
   // Проверка, можно ли отменить заказ
   const canBeCancelled = () => {
-    return order.status === 'pending' || order.status === 'confirmed';
+    return order.status === STATUSES.CREATED || order.status === STATUSES.DELIVERED;
   };
   
   // Отмена заказа

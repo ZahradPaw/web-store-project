@@ -26,7 +26,7 @@ const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
-    'Content-Type': 'application/json',
+    'Content-Type': 'multipart/form-data',
   },
   withCredentials: true
 });
@@ -186,7 +186,7 @@ export const deleteUser = async (userID) => {
   }
 }
 
-// Получение списка продуктов (name_filter - поиск товаров по названию)
+// Получение списка товаров (name_filter - поиск товаров по названию)
 export const getProducts = async (name_filter = '') => {
   try {
     const response = await apiClient.get(`${PRODUCTS_LIST_URL}?name=${name_filter}`);
@@ -196,7 +196,7 @@ export const getProducts = async (name_filter = '') => {
   }
 }
 
-// Получение продукта по ID
+// Получение товаров по ID
 export const getProduct = async (productID) => {
   try {
     const response = await apiClient.get(`${PRODUCTS_LIST_URL}${productID}/`);
@@ -206,7 +206,7 @@ export const getProduct = async (productID) => {
   }
 }
 
-// Создание нового продукта
+// Создание нового товара
 export const createProduct = async (productData) => {
   try {
     const response = await apiClient.post(PRODUCTS_LIST_URL, productData);
@@ -216,7 +216,7 @@ export const createProduct = async (productData) => {
   }
 }
 
-// Обновление продукта
+// Обновление товара
 export const updateProduct = async (productId, productData) => {
   try {
     const response = await apiClient.patch(`${PRODUCTS_LIST_URL}${productId}/`, productData);
@@ -226,7 +226,7 @@ export const updateProduct = async (productId, productData) => {
   }
 }
 
-// Удаление продукта 
+// Удаление товара 
 export const deleteProduct = async (productId) => {
   try {
     const response = await apiClient.delete(`${PRODUCTS_LIST_URL}${productId}/`);

@@ -2,8 +2,11 @@ from rest_framework import permissions
 from .models import User
 
 
-STAFF_USERS = (User.Roles.SALESPERSON, User.Roles.MERCHANDISER,
-               User.Roles.ADMIN, User.Roles.ACCOUNT_MANAGER, User.Roles.DIRECTOR)
+STAFF_USERS = (User.Roles.SALESPERSON,
+               User.Roles.MERCHANDISER,
+               User.Roles.ADMIN,
+               User.Roles.ACCOUNT_MANAGER,
+               User.Roles.DIRECTOR)
 
 
 class IsStaffUser(permissions.BasePermission):

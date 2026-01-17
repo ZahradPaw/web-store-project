@@ -16,8 +16,10 @@ class Order(models.Model):
                                on_delete=models.CASCADE,
                                related_name="orders",
                                verbose_name="Клиент")
-    order_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата заказа')
-    delivery_date = models.DateField(null=True, blank=True, verbose_name='Дата доставки')
+    order_date = models.DateTimeField(auto_now_add=True,
+                                      verbose_name='Дата заказа')
+    delivery_date = models.DateField(null=True, blank=True,
+                                     verbose_name='Дата доставки')
     total_price = models.DecimalField(max_digits=12,
                                       decimal_places=2,
                                       default=0,
@@ -38,15 +40,21 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     """Модель товара в заказе"""
-    order = models.ForeignKey(Order, related_name="items", on_delete=models.CASCADE,
+    order = models.ForeignKey(Order,
+                              related_name="items",
+                              on_delete=models.CASCADE,
                               verbose_name="Заказ")
-    product = models.ForeignKey('products.Product', on_delete=models.CASCADE,
+    product = models.ForeignKey('products.Product',
+                                on_delete=models.CASCADE,
                                 verbose_name="Товар")
-    quantity = models.DecimalField(max_digits=10, decimal_places=2,
+    quantity = models.DecimalField(max_digits=10,
+                                   decimal_places=2,
                                    verbose_name="Количество")
-    price = models.DecimalField(max_digits=10, decimal_places=2,
+    price = models.DecimalField(max_digits=10,
+                                decimal_places=2,
                                 verbose_name="Цена за единицу")
-    total = models.DecimalField(max_digits=12, decimal_places=2,
+    total = models.DecimalField(max_digits=12,
+                                decimal_places=2,
                                 verbose_name="Общая цена")
 
     class Meta:
