@@ -3,10 +3,13 @@ import { useAuthContext } from '../contexts/AuthContext';
 import UserInfo from '../components/Profile/UserInfo';
 import ClientStats from '../components/Profile/ClientStats';
 import LoadingComponent from '../components/LoadingComponent';
+import usePageTitle from '../hooks/usePageTitle';
 
 // Страница личного кабинета пользователя
 const ProfilePage = () => {
   const { user, loading } = useAuthContext();
+
+  usePageTitle("Личный кабинет");
 
   // Загрузка профиля
   if (loading) {

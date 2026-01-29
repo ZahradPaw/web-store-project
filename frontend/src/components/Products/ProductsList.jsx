@@ -5,11 +5,11 @@ import ErrorRetryComponent from '../ErrorRetryComponent';
 import LoadingComponent from '../LoadingComponent';
 import SearchBar from '../SearchBar';
 import { getUnitDisplay, UNITS } from '../../utils/product';
-import ProductAddForm from './ProductAddForm';
+import ProductForm from './ProductForm';
 import './Products.css';
 
 // Компонент списка товаров для управления ими
-const ProductsManagerList = () => {
+const ProductsList = () => {
   const [products, setProducts] = useState([]);
   const [products_filter, setProductsFilter] = useState('');
   const [loading, setLoading] = useState(true);
@@ -218,7 +218,7 @@ const ProductsManagerList = () => {
         }
       </div>
 
-      {is_show_form && <ProductAddForm 
+      {is_show_form && <ProductForm 
         onSubmit={handleSubmit} 
         onCancel={() => setShowForm(false)} 
       />}
@@ -235,4 +235,4 @@ const ProductsManagerList = () => {
   );
 };
 
-export default ProductsManagerList;
+export default ProductsList;

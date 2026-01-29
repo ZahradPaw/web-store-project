@@ -6,14 +6,15 @@ import { createDefaultProduct, UNITS } from '../../utils/product';
 import './Products.css';
 
 // Форма добавления и редактирования товара
-const ProductForm = ({ product }) => {
+const ProductForm = ({ product, onSubmit, onCancel }) => {
   // Если параметром передан product, то осуществляется редактирование данного товара
   // В ином случае идет добавление нового товара
+
   const [formData, setFormData] = useState(createDefaultProduct);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [errors, setErrors] = useState({});
-  const [previewImage, setPreviewImage] = useState(product.photo);
+  const [previewImage, setPreviewImage] = useState(product?.photo);
   const navigate = useNavigate();
 
   // Ограничения изображения
@@ -28,7 +29,6 @@ const ProductForm = ({ product }) => {
         unit: product.unit || UNITS.PIECES,
         quantity: product.quantity || '',
         description: product.description || '',
-        photo: product.photo || ''
       });
     }
   }, [product]);
@@ -127,30 +127,16 @@ const ProductForm = ({ product }) => {
       else {
         await createNewProduct(); 
       }
-
       setLoading(false);
+      if (onSubmit) onSubmit();
     }
   };
-
-  // Удаление текущего изображения
-  const handleRemoveImage = () => {
-    setPreviewImage(null);
-    
-    if (product) {
-      setFormData(prev => ({
-        ...prev,
-        photo: ''
-      }));
-    }
-  };
-
-  // Отмена редактирования
-  const onCancel = () => {
-    navigate('/products/list'); 
-  }
 
   // Добавление нового товара
   const createNewProduct = async () => {
+    setLoading(true);
+    setError('');
+
     const result = await createProduct(formData);
 
     if (result.success) {
@@ -160,12 +146,15 @@ const ProductForm = ({ product }) => {
     else {
       setError(result.error);
     }
+    setLoading(false);
   } 
 
   // Обновление текущего продукта
   const updateCurrentProduct = async () => {
+    setLoading(true);
+    setError('');
+
     const result = await updateProduct(product.id, formData);
-    console.log(formData.photo);
 
     if (result.success) {
       // Перенаправление на страницу со списком товаров
@@ -174,6 +163,7 @@ const ProductForm = ({ product }) => {
     else {
       setError(result.error);
     }
+    setLoading(false);
   } 
 
   // Удаление текущего товара
@@ -202,199 +192,199 @@ const ProductForm = ({ product }) => {
     }
   }
 
+  // Удаление текущего изображения
+  const handleRemoveImage = () => {
+    setPreviewImage(null);
+    
+    if (product) {
+      setFormData(prev => ({
+        ...prev,
+        photo: ''
+      }));
+    }
+  };
+
   return (
-    <div className="product-form-container">
-      <div className="card">
-        <div className="card-header">
-          <h5 className="card-title mb-0">
-            <i className="bi bi-box me-2"></i>
-            {product ? 'Редактирование товара' : 'Добавление нового товара'}
-          </h5>
-        </div>
-        <div className="card-body">
+    <div className="card mb-3">
+      <div className="card-body">
+        <form onSubmit={handleSubmit}>
+          <div className="row">
+            <ErrorComponent error={error} />
 
-          <form onSubmit={handleSubmit}>
-            <div className="row">
-
-              <ErrorComponent error={error} />
-
-              <div className="mb-4">
-                <label className="form-label d-block">
-                  Фото товара
-                </label>
-                
-                <div className="image-upload-container">
-                  {previewImage ? (
-                    <div className="image-preview">
-                      <img 
-                        src={previewImage} 
-                        alt="Превью" 
-                        className="img-thumbnail"
-                      />
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-danger remove-image-btn"
-                        onClick={handleRemoveImage}
-                        title="Удалить фото"
-                      >
-                        <i className="bi bi-x"></i>
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="image-upload-placeholder">
-                      <i className="bi bi-image text-muted"></i>
-                      <span className="ms-2">Нет фото</span>
-                    </div>
-                  )}
-                  
-                  <div className="mt-3">
-                    <input
-                      type="file"
-                      className={`form-control ${errors.photo ? 'is-invalid' : ''}`}
-                      id="photo"
-                      name="photo"
-                      accept="image/jpeg,image/png"
-                      onChange={handleChange}
+            <div className="mb-4">
+              <label className="form-label d-block">
+                Фото товара
+              </label>
+              
+              <div className="image-upload-container">
+                {previewImage ? (
+                  <div className="image-preview">
+                    <img 
+                      src={previewImage} 
+                      alt="Превью" 
+                      className="img-thumbnail"
                     />
-                    {errors.photo && (
-                      <div className="invalid-feedback d-block">{errors.photo}</div>
-                    )}
-                    <div className="form-text">
-                      Поддерживаются JPG и PNG до 5MB
-                    </div>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-danger remove-image-btn"
+                      onClick={handleRemoveImage}
+                      title="Удалить фото"
+                    >
+                      <i className="bi bi-x"></i>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="image-upload-placeholder">
+                    <i className="bi bi-image text-muted"></i>
+                    <span className="ms-2">Нет фото</span>
+                  </div>
+                )}
+                
+                <div className="mt-3">
+                  <input
+                    type="file"
+                    className={`form-control ${errors.photo ? 'is-invalid' : ''}`}
+                    id="photo"
+                    name="photo"
+                    accept="image/jpeg,image/png"
+                    onChange={handleChange}
+                  />
+                  {errors.photo && (
+                    <div className="invalid-feedback d-block">{errors.photo}</div>
+                  )}
+                  <div className="form-text">
+                    Поддерживаются JPG и PNG до 5MB
                   </div>
                 </div>
               </div>
-              
-              <div className="mb-2">
-                <label htmlFor="name" className="form-label">
-                  Название товара *
-                </label>
-                <input
-                  type="text"
-                  className={`form-control ${errors.name ? 'is-invalid' : ''}`}
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Введите название товара"
-                />
-                {errors.name && (
-                  <div className="invalid-feedback">{errors.name}</div>
-                )}
-              </div>
-
-              <div className="mb-2">
-                <label htmlFor="price" className="form-label">
-                  Цена (₽) *
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  className={`form-control ${errors.price ? 'is-invalid' : ''}`}
-                  id="price"
-                  name="price"
-                  value={formData.price}
-                  onChange={handleChange}
-                  placeholder="0.00"
-                />
-                {errors.price && (
-                  <div className="invalid-feedback">{errors.price}</div>
-                )}
-              </div>
-              <div className="mb-2">
-                <label htmlFor="unit" className="form-label">
-                  Единица измерения *
-                </label>
-                <select
-                  className="form-select"
-                  id="unit"
-                  name="unit"
-                  value={formData.unit}
-                  onChange={handleChange}
-                >
-                  <option value="pieces">Штуки</option>
-                  <option value="kg">Килограммы</option>
-                  <option value="liter">Литры</option>
-                </select>
-              </div>
-              <div className="mb-2">
-                <label htmlFor="quantity" className="form-label">
-                  Количество на складе *
-                </label>
-                <input
-                  type="number"
-                  step={formData.unit === UNITS.PIECES ? '1' : '0.01'}
-                  min="0"
-                  className={`form-control ${errors.quantity ? 'is-invalid' : ''}`}
-                  id="quantity"
-                  name="quantity"
-                  value={formData.quantity}
-                  onChange={handleChange}
-                  placeholder={formData.unit === UNITS.PIECES ? '0' : '0.00'}
-                />
-                {errors.quantity && (
-                  <div className="invalid-feedback">{errors.quantity}</div>
-                )}
-              </div>
             </div>
-            <div className="mb-2">
-              <label htmlFor="description" className="form-label">
-                Описание товара
+
+            <div className="mb-1">
+              <label htmlFor="name" className="form-label">
+                Название товара *
               </label>
-              <textarea
-                className="form-control"
-                id="description"
-                name="description"
-                rows="3"
-                value={formData.description}
+              <input
+                type="text"
+                className={`form-control ${errors.name ? 'is-invalid' : ''}`}
+                id="name"
+                name="name"
+                value={formData.name}
                 onChange={handleChange}
-                placeholder="Введите описание товара (необязательно)"
+                placeholder="Введите название товара"
               />
-            </div>
-
-            <div className="d-flex gap-2">
-              <button
-                type="submit"
-                className="btn btn-primary"
-                disabled={loading}
-              >
-                {loading ? (
-                  <div>
-                    <span className="spinner-border spinner-border-sm me-2"></span>
-                    Сохранение...
-                  </div>
-                ) : (
-                  <div>
-                    <i className="bi bi-check-circle me-2"></i>
-                    {product ? 'Сохранить изменения' : 'Добавить товар'}
-                  </div>
-                )}
-              </button>
-              {product && (
-                <button
-                  type="button"
-                  className="btn btn-outline-danger"
-                  onClick={onDelete}
-                >
-                  <i className="bi bi-trash me-2"></i>
-                  Удалить товар
-                </button>
+              {errors.name && (
+                <div className="invalid-feedback">{errors.name}</div>
               )}
+            </div>
+            <div className="mb-1">
+              <label htmlFor="price" className="form-label">
+                Цена (₽) *
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                className={`form-control ${errors.price ? 'is-invalid' : ''}`}
+                id="price"
+                name="price"
+                value={formData.price}
+                onChange={handleChange}
+                placeholder="0.00"
+              />
+              {errors.price && (
+                <div className="invalid-feedback">{errors.price}</div>
+              )}
+            </div>
+            <div className="mb-1">
+              <label htmlFor="unit" className="form-label">
+                Единица измерения *
+              </label>
+              <select
+                className="form-select"
+                id="unit"
+                name="unit"
+                value={formData.unit}
+                onChange={handleChange}
+              >
+                <option value="pieces">Штуки</option>
+                <option value="kg">Килограммы</option>
+                <option value="liter">Литры</option>
+              </select>
+            </div>
+            <div className="mb-1">
+              <label htmlFor="quantity" className="form-label">
+                Количество на складе *
+              </label>
+              <input
+                type="number"
+                step={formData.unit === UNITS.PIECES ? '1' : '0.01'}
+                min="0"
+                className={`form-control ${errors.quantity ? 'is-invalid' : ''}`}
+                id="quantity"
+                name="quantity"
+                value={formData.quantity}
+                onChange={handleChange}
+                placeholder={formData.unit === UNITS.PIECES ? '0' : '0.00'}
+              />
+              {errors.quantity && (
+                <div className="invalid-feedback">{errors.quantity}</div>
+              )}
+            </div>
+          </div>
+          <div className="mb-1">
+            <label htmlFor="description" className="form-label">
+              Описание товара
+            </label>
+            <textarea
+              className="form-control"
+              id="description"
+              name="description"
+              rows="3"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="Введите описание товара (необязательно)"
+            />
+          </div>
+          
+          <div className="d-flex gap-2">
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={loading}
+            >
+              {loading ? (
+                <div>
+                  <span className="spinner-border spinner-border-sm me-2"></span>
+                  {product ? 'Сохранение...' : 'Создание...'}
+                </div>
+              ) : (
+                <div>
+                  <i className="bi bi-check-circle me-2"></i>
+                  {product ? 'Сохранить изменения' : 'Добавить товар'}
+                </div>
+              )}
+            </button>
+            {product && (
               <button
                 type="button"
-                className="btn btn-outline-secondary"
-                onClick={onCancel}
-                disabled={loading}
+                className="btn btn-outline-danger"
+                onClick={onDelete}
               >
-                <i className="bi bi-x-circle me-2"></i>
-                Отмена
+                <i className="bi bi-trash me-2"></i>
+                Удалить товар
               </button>
-            </div>
-          </form>
-
-        </div>
+            )}
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
+              onClick={onCancel}
+              disabled={loading}
+            >
+              <i className="bi bi-x-circle me-2"></i>
+              Отмена
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

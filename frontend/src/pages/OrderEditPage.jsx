@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import OrderManagerDetail from '../components/Orders/OrderManagerDetail';
+import OrderEdit from '../components/Orders/OrderEdit';
 import LoadingComponent from '../components/LoadingComponent';
 import ErrorRetryComponent from '../components/ErrorRetryComponent';
 import { getOrder } from '../endpoints/api';
+import usePageTitle from '../hooks/usePageTitle';
 
-// Страница просмотра заказа для продавца
-const OrderDetailManagerPage = () => {
+// Страница редактирования заказа для продавца
+const OrderEditPage = () => {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  usePageTitle(`Редактирование заказа #${id}`);
 
   useEffect(() => {
     loadOrder();
@@ -68,9 +71,9 @@ const OrderDetailManagerPage = () => {
         </div>
       </div>
 
-      <OrderManagerDetail order={order} />
+      <OrderEdit order={order} />
     </div>
   );
 };
 
-export default OrderDetailManagerPage;
+export default OrderEditPage;

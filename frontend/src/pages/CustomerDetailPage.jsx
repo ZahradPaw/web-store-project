@@ -4,28 +4,31 @@ import CustomerDetail from '../components/Customers/CustomerDetail';
 import LoadingComponent from '../components/LoadingComponent';
 import ErrorRetryComponent from '../components/ErrorRetryComponent';
 import { getUser } from '../endpoints/api';
+import usePageTitle from '../hooks/usePageTitle';
 
 // Страница с информацией о покупателе и его заказах
 const CustomerDetailPage = () => {
   const { id } = useParams();
-  const [client, setClient] = useState(null);
+  const [customer, setCustomer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  usePageTitle(customer && `Покупатель: ${customer.first_name} ${customer.last_name}`);
+
   useEffect(() => {
-    loadClient();
+    loadCustomer();
   }, [id]);
 
   // Загрузка данных клиента
-  const loadClient = async () => {
+  const loadCustomer = async () => {
     setLoading(true);
     setError(''); 
     
     const result = await getUser(id);
 
     if (result.success) {
-      setClient(result.data)
+      setCustomer(result.data)
     }
     else {
       setError(result.error);
@@ -48,7 +51,7 @@ const CustomerDetailPage = () => {
       <div className="container py-4">
         <ErrorRetryComponent 
           error={error}
-          onClick={loadClient}
+          onClick={loadCustomer}
         />
       </div>
     );
@@ -68,7 +71,7 @@ const CustomerDetailPage = () => {
         </div>
       </div>
 
-      <CustomerDetail customer={client} />
+      <CustomerDetail customer={customer} />
     </div>
   );
 };

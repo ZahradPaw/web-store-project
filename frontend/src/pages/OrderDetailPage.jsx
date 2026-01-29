@@ -1,11 +1,14 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import OrderDetail from '../components/Orders/OrderDetail';
+import usePageTitle from '../hooks/usePageTitle';
 
 // Страница просмотра заказа для клиента
 const OrderDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+
+  usePageTitle(`Заказ #${id}`);
 
   return (
     <div className="container py-4">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getOrders } from '../../endpoints/api';
 import LoadingComponent from '../LoadingComponent';
 import ErrorRetryComponent from '../ErrorRetryComponent';
@@ -112,7 +112,9 @@ const OrdersManagerList = () => {
                     <React.Fragment key={order.id}>
                       <tr className="order-row">
                         <td>#{order.id}</td>
-                        <td>{order.client_name}</td>
+                        <td>
+                          <Link to={`/customer/${order.client}`}>{order.client_name}</Link>
+                        </td>
                         <td>{formatDate(order.order_date)}</td>
                         <td>{parseFloat(order.total_price).toFixed(2)} ₽</td>
                         <td>

@@ -22,6 +22,18 @@ class UserListView(generics.ListAPIView):
         return User.objects.filter(first_name__icontains=name)
 
 
+class StaffListView(generics.ListAPIView):
+    """Представление списка всех сотрудников"""
+    queryset = User.objects.all()
+    serializer_class = UserListSerializer
+    permission_classes = (IsStaffUser,)
+
+    def get_queryset(self):
+        # Получение сотрудников, содержащих указанные символы через параметр name
+        name = self.request.query_params.get('name', '')
+        return User.objects.exclude(role='client').filter(first_name__icontains=name)
+
+
 class UserProfileView(generics.RetrieveAPIView):
     """Профиль пользователя"""
     serializer_class = UserProfileSerializer

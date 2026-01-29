@@ -6,7 +6,7 @@ import { ROLES, createDefaultUser } from '../../utils/user';
 import './Staff.css'; 
 
 // Форма добавления и редактирования сотрудника
-const StaffForm = ({ staff }) => {
+const StaffForm = ({ staff, onSubmit, onCancel }) => {
   // Если параметром передан staff, то осуществляется редактирование данного сотрудника
   // В ином случае идет добавление нового сотрудника
 
@@ -145,11 +145,6 @@ const StaffForm = ({ staff }) => {
     setLoading(false);
   }
 
-  // Отмена редактирования
-  const onCancel = () => {
-    navigate('/staff/list'); 
-  }
-
   // Функция кнопки удаления сотрудника
   const onDelete = async () => {
     if (window.confirm(
@@ -160,27 +155,12 @@ const StaffForm = ({ staff }) => {
   }
 
   return (
-    <div className="admin-form-container">
-      <div className="card">
-        <div className="card-header">
-          <h5 className="card-title mb-0">
-            <i className="bi bi-person-badge me-2"></i>
-            {staff ? 'Редактирование сотрудника' : 'Добавление нового сотрудника'}
-          </h5>
-        </div>
+    <div className="card mb-3">
         <div className="card-body">
           <form onSubmit={handleSubmit}>
-            {errors.submit && (
-              <div className="alert alert-danger">
-                <i className="bi bi-exclamation-triangle me-2"></i>
-                {errors.submit}
-              </div>
-            )}
-
+            <ErrorComponent error={error} />
             <div className="row">
-              <ErrorComponent error={error} />
-
-              <div className="mb-3">
+              <div className="mb-2">
                 <label htmlFor="username" className="form-label">
                   Логин *
                 </label>
@@ -198,7 +178,7 @@ const StaffForm = ({ staff }) => {
                 )}
               </div>
 
-              <div className="mb-3">
+              <div className="mb-2">
                 <label htmlFor="email" className="form-label">
                   Email *
                 </label>
@@ -218,7 +198,7 @@ const StaffForm = ({ staff }) => {
               
               {!staff && (
                 <div>
-                  <div className="mb-3">
+                  <div className="mb-2">
                     <label htmlFor="password" className="form-label">
                       Пароль *
                     </label>
@@ -236,7 +216,7 @@ const StaffForm = ({ staff }) => {
                     )}
                   </div>
 
-                  <div className="mb-3">
+                  <div className="mb-2">
                     <label htmlFor="password2" className="form-label">
                       Подтверждение пароля *
                     </label>
@@ -256,7 +236,7 @@ const StaffForm = ({ staff }) => {
                 </div>
               )}
 
-              <div className="mb-3">
+              <div className="mb-2">
                 <label htmlFor="first_name" className="form-label">
                   Имя *
                 </label>
@@ -274,7 +254,7 @@ const StaffForm = ({ staff }) => {
                 )}
               </div>
 
-              <div className="mb-3">
+              <div className="mb-2">
                 <label htmlFor="last_name" className="form-label">
                   Фамилия *
                 </label>
@@ -292,7 +272,7 @@ const StaffForm = ({ staff }) => {
                 )}
               </div>
 
-              <div className="mb-3">
+              <div className="mb-2">
                 <label htmlFor="phone" className="form-label">
                   Телефон
                 </label>
@@ -307,7 +287,7 @@ const StaffForm = ({ staff }) => {
                 />
               </div>
 
-              <div className="mb-3">
+              <div className="mb-2">
                 <label htmlFor="role" className="form-label">
                   Роль *
                 </label>
@@ -326,7 +306,7 @@ const StaffForm = ({ staff }) => {
                 </select>
               </div>
 
-              <div className="mb-3">
+              <div className="mb-2">
                 <label htmlFor="date_of_birth" className="form-label">
                   Дата рождения *
                 </label>
@@ -383,7 +363,6 @@ const StaffForm = ({ staff }) => {
           </form>
         </div>
       </div>
-    </div>
   );
 };
 

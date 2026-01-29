@@ -6,30 +6,28 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
-
+import PrivateRoute from './routes/PrivateRoute';
+import StaffRoute from './routes/StaffRoute';
 import Header from './components/Layout/Header';
-import PrivateRoute from './components/PrivateRoute';
 
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import ProductsPage from './pages/ProductsPage';
 import ProductDetailPage from './pages/ProductDetailPage';
-import ProductsManagerPage from './pages/ProductsManagerPage';
-import ProductDetailManagerPage from './pages/ProductDetailManagerPage';
-import ProductCreatePage from './pages/ProductCreatePage';
+import ProductsCatalogPage from './pages/ProductsCatalogPage';
+import ProductsPage from './pages/ProductsPage';
+import ProductEditPage from './pages/ProductEditPage';
 import OrdersPage from './pages/OrdersPage';
 import OrderDetailPage from './pages/OrderDetailPage';
 import ProfilePage from './pages/ProfilePage';
 import CartPage from './pages/CartPage';
 import CustomersPage from './pages/CustomersPage';
-import CustomerCreatePage from './pages/CustomerCreatePage';
-import CustomerDetailManagerPage from './pages/CustomerDetailManagerPage';
+import CustomerEditPage from './pages/CustomerEditPage';
+import CustomerDetailPage from './pages/CustomerDetailPage';
 import OrdersManagerPage from './pages/OrdersManagerPage';
-import OrderDetailManagerPage from './pages/OrderDetailManagerPage';
+import OrderEditPage from './pages/OrderEditPage';
 import OrderCreatePage from './pages/OrderCreatePage';
 import StaffListPage from './pages/StaffListPage';
-import StaffDetailPage from './pages/StaffDetailPage';
-import StaffCreatePage from './pages/StaffCreatePage';
+import StaffEditPage from './pages/StaffEditPage';
 import LoyaltySettingsPage from './pages/LoyaltySettingsPage';
 import ReportPage from './pages/ReportPage';
 
@@ -41,7 +39,7 @@ const AppContent = () => {
         <main>
           <Routes>
             {/* Публичные маршруты */}
-            <Route path="/" element={<ProductsPage />} />
+            <Route path="/" element={<ProductsCatalogPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/product/:id" element={<ProductDetailPage />} />
@@ -86,113 +84,97 @@ const AppContent = () => {
             <Route
               path="/products/list"
               element={
-                <PrivateRoute>
-                  <ProductsManagerPage />
-                </PrivateRoute>
+                <StaffRoute>
+                  <ProductsPage />
+                </StaffRoute>
               }
             />
             <Route
               path="/products/detail/:id"
               element={
-                <PrivateRoute>
-                  <ProductDetailManagerPage />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/products/create"
-              element={
-                <PrivateRoute>
-                  <ProductCreatePage />
-                </PrivateRoute>
+                <StaffRoute>
+                  <ProductEditPage />
+                </StaffRoute>
               }
             />
             <Route
               path="/customers/list"
               element={
-                <PrivateRoute>
+                <StaffRoute>
                   <CustomersPage />
-                </PrivateRoute>
+                </StaffRoute>
               }
             />
             <Route
               path="/customers/detail/:id"
               element={
-                <PrivateRoute>
-                  <CustomerDetailManagerPage />
-                </PrivateRoute>
+                <StaffRoute>
+                  <CustomerEditPage />
+                </StaffRoute>
               }
             />
             <Route
-              path="/customers/register"
+              path="/customer/:id"
               element={
-                <PrivateRoute>
-                  <CustomerCreatePage />
-                </PrivateRoute>
+                <StaffRoute>
+                  <CustomerDetailPage />
+                </StaffRoute>
               }
             />
             <Route
               path="/orders/list"
               element={
-                <PrivateRoute>
+                <StaffRoute>
                   <OrdersManagerPage />
-                </PrivateRoute>
+                </StaffRoute>
               }
             />
             <Route
               path="/orders/detail/:id"
               element={
-                <PrivateRoute>
-                  <OrderDetailManagerPage />
-                </PrivateRoute>
+                <StaffRoute>
+                  <OrderEditPage />
+                </StaffRoute>
               }
             />
             <Route
               path="/orders/create"
               element={
-                <PrivateRoute>
+                <StaffRoute>
                   <OrderCreatePage />
-                </PrivateRoute>
+                </StaffRoute>
               }
             />
             <Route
               path="/staff/list"
               element={
-                <PrivateRoute>
+                <StaffRoute>
                   <StaffListPage />
-                </PrivateRoute>
+                </StaffRoute>
               }
             />
             <Route
               path="/staff/detail/:id"
               element={
-                <PrivateRoute>
-                  <StaffDetailPage />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/staff/register"
-              element={
-                <PrivateRoute>
-                  <StaffCreatePage />
-                </PrivateRoute>
+                <StaffRoute>
+                  <StaffEditPage />
+                </StaffRoute>
               }
             />
             <Route
               path="/loyalty-settings"
               element={
-                <PrivateRoute>
+                <StaffRoute>
                   <LoyaltySettingsPage />
-                </PrivateRoute>
+                </StaffRoute>
               }
             />
             <Route
               path="/report"
               element={
-                <PrivateRoute>
+                <StaffRoute>
                   <ReportPage />
-                </PrivateRoute>
+                </StaffRoute>
               }
             />
 

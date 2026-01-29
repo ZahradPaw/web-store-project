@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import OrderCreateCard from '../components/Orders/OrderCreateCard';
+import usePageTitle from '../hooks/usePageTitle';
 
 // Страница создания заказа продавцом
 const OrderCreatePage = () => {
   const navigate = useNavigate();
   const [success, setSuccess] = useState(false);
+
+  usePageTitle("Оформление продажи");
 
   // Перенаправление на страницу созданого заказа через 2 секунды
   const handleSubmit = (order) => {

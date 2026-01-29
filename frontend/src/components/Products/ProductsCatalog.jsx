@@ -4,7 +4,7 @@ import ProductCard from './ProductCard';
 import LoadingComponent from '../LoadingComponent';
 import ErrorRetryComponent from '../ErrorRetryComponent';
 import SearchBar from '../SearchBar';
-import { getProducts } from '../../endpoints/api';
+import { getAvailableProducts } from '../../endpoints/api';
 import { getUnitDisplay, UNITS } from '../../utils/product';
 import './Products.css';
 
@@ -32,10 +32,11 @@ const ProductsCatalog = ({ onAddToCart }) => {
     setLoading(true);
     setError(''); 
     
-    const result = await getProducts(products_filter);
+    const result = await getAvailableProducts(products_filter);
 
-    if (result.success)
+    if (result.success) {
       setProducts(result.data.results);
+    }
     else
       setError(result.error);
     setLoading(false);
@@ -68,7 +69,7 @@ const ProductsCatalog = ({ onAddToCart }) => {
   );
 
   // Каталог товаров в виде карточек 
-   const cardViewContent = (
+  const cardViewContent = (
     <div className="row g-4">
       {products.map(product => (
         <div key={product.id} className="col-sm-6 col-md-4 col-lg-3">

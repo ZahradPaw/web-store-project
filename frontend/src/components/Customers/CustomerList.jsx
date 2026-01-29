@@ -5,7 +5,7 @@ import ErrorRetryComponent from '../ErrorRetryComponent';
 import LoadingComponent from '../LoadingComponent';
 import SearchBar from '../SearchBar';
 import { formatDate } from '../../utils/utils';
-import CustomerAddForm from './CustomerAddForm';
+import CustomerForm from './CustomerForm';
 import './Customers.css';
 
 // Компонент списка клиентов
@@ -36,7 +36,7 @@ const CustomerList = () => {
     setLoading(false);
   };
 
-  // Перенаправление на страницу регистрации клиента
+  // Отображение формы добавления покупателя
   const handleAddCustomer = () => {
     setShowForm(true);
   };
@@ -189,7 +189,7 @@ const CustomerList = () => {
         }
       </div>
 
-      {is_show_form && <CustomerAddForm 
+      {is_show_form && <CustomerForm 
         onSubmit={handleSubmit} 
         onCancel={() => setShowForm(false)} 
       />}

@@ -1,31 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import CustomerForm from '../components/Customers/CustomerForm';
+import StaffEdit from '../components/Staff/StaffEdit';
 import LoadingComponent from '../components/LoadingComponent';
 import ErrorRetryComponent from '../components/ErrorRetryComponent';
 import { getUser } from '../endpoints/api';
+import usePageTitle from '../hooks/usePageTitle';
 
-// Страница управления данными покупателя
-const CustomerDetailManagerPage = () => {
+// Страница управления данными сотрудника
+const StaffEditPage = () => {
   const { id } = useParams();
-  const [customer, setCustomer] = useState(null);
+  const [staff, setStaff] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  usePageTitle(staff && `Редактирование сотрудника: ${staff.first_name} ${staff.last_name}`);
+
   useEffect(() => {
-    loadCustomer();
+    loadStaff();
   }, [id]);
 
-  // Загрузка данных покупателя
-  const loadCustomer = async () => {
+  // Загрузка сотрудника
+  const loadStaff = async () => {
     setLoading(true);
     setError(''); 
     
     const result = await getUser(id);
 
     if (result.success) {
-      setCustomer(result.data)
+      setStaff(result.data)
     }
     else {
       setError(result.error);
@@ -37,7 +40,7 @@ const CustomerDetailManagerPage = () => {
   if (loading) {
    return (
       <div className="container py-4">
-        <LoadingComponent text={'Загрузка товара...'} />
+        <LoadingComponent text={'Загрузка сотрудника...'} />
       </div>
     );
   }
@@ -48,7 +51,7 @@ const CustomerDetailManagerPage = () => {
       <div className="container py-4">
         <ErrorRetryComponent 
           error={error}
-          onClick={loadCustomer}
+          onClick={loadStaff}
         />
       </div>
     );
@@ -60,17 +63,17 @@ const CustomerDetailManagerPage = () => {
         <div className="col-12">
           <button
             className="btn btn-outline-secondary mb-3"
-            onClick={() => navigate('/customers/list')}
+            onClick={() => navigate('/staff/list')}
           >
             <i className="bi bi-arrow-left me-2"></i>
-            Назад к списку покупателей
+            Назад к списку сотрудников
           </button>
         </div>
       </div>
 
-      <CustomerForm customer={customer} />
+      <StaffEdit staff={staff} />
     </div>
   );
 };
 
-export default CustomerDetailManagerPage;
+export default StaffEditPage;

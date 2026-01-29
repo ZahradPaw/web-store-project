@@ -6,8 +6,8 @@ import { getStatusDisplay, getStatusBadge } from '../../utils/order';
 import { formatDate } from '../../utils/utils';
 import './Orders.css';
 
-// Компонент деталей заказа для продавца
-const OrderManagerDetail = ({ order }) => {
+// Компонент редактирования заказа для продавца
+const OrderEdit = ({ order }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [editing, setEditing] = useState(false);
@@ -207,4 +207,4 @@ const OrderManagerDetail = ({ order }) => {
   );
 };
 
-export default OrderManagerDetail;
+export default OrderEdit;

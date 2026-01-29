@@ -1,14 +1,14 @@
 import React from 'react';
-import ProductsCatalog from '../components/Products/ProductsCatalog';
-import { useCartContext } from '../contexts/CartContext';
+import ProductsList from '../components/Products/ProductsList';
+import usePageTitle from '../hooks/usePageTitle';
 
-// Страница с каталогом товаров
+// Страница со списком товаров и управление имм
 const ProductsPage = () => {
-  const { addToCart } = useCartContext();
-
+  usePageTitle("Товары");
+  
   return (
     <div className="container py-4">
-      <ProductsCatalog onAddToCart={addToCart} />
+      <ProductsList />
     </div>
   );
 };

@@ -21,6 +21,15 @@ export const ROLES = {
   ADMIN: 'admin',
 };
 
+export const STAFF_ROLES = [
+  ROLES.MERCHANDISER, 
+  ROLES.ACCOUNT_MANAGER, 
+  ROLES.ACCOUNT_MANAGER, 
+  ROLES.SALESPERSON, 
+  ROLES.DIRECTOR, 
+  ROLES.ADMIN
+];
+
 const ROLE_DISPLAY_NAMES = {
   'client': 'Покупатель',
   'merchandiser': 'Товаровед',

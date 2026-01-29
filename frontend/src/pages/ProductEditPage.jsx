@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import ProductForm from '../components/Products/ProductForm';
+import ProductEdit from '../components/Products/ProductEdit';
 import LoadingComponent from '../components/LoadingComponent';
 import ErrorRetryComponent from '../components/ErrorRetryComponent';
 import { getProduct } from '../endpoints/api';
+import usePageTitle from '../hooks/usePageTitle';
 
 // Страница управления деталями товара
-const ProductDetailManagerPage = () => {
+const ProductEditPage = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  usePageTitle(product && `Редактирование товара: ${product.name}`);
 
   useEffect(() => {
     loadProduct();
@@ -68,9 +71,9 @@ const ProductDetailManagerPage = () => {
         </div>
       </div>
 
-      <ProductForm product={product} />
+      <ProductEdit product={product} />
     </div>
   );
 };
 
-export default ProductDetailManagerPage;
+export default ProductEditPage;

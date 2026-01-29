@@ -10,11 +10,13 @@ const REFRESH_TOKEN_URL = '/auth/token/refresh/';
 // Эндпоинты пользователей
 const REGISTER_URL = '/users/register/';
 const USERS_LIST_URL = '/users/list/';
+const STAFF_LIST_URL = '/users/staff-list/';
 const PROFILE_URL = '/users/profile/';
 const USER_DETAILS_URL = '/users/user/';
 
 // Эндпоинты продуктов
 const PRODUCTS_LIST_URL = '/products/';
+const PRODUCTS_AVAILABLE_LIST_URL = '/products/available/';
 
 // Эндпоинты заказов
 const ORDERS_LIST_URL = '/orders/';
@@ -145,6 +147,16 @@ export const getUsers = async (name_filter = '', role = '') => {
   }
 }
 
+// Получение списка сотрудников 
+export const getStaff = async (name_filter = '') => {
+  try {
+    const response = await apiClient.get(`${STAFF_LIST_URL}?name=${name_filter}`);
+    return getResponseDataSuccess(response);
+  } catch (error) {
+    return getResponseDataFailed(error);
+  }
+}
+
 // Получение профиля текущего пользователя
 export const getProfile = async () => {
   try {
@@ -187,9 +199,19 @@ export const deleteUser = async (userID) => {
 }
 
 // Получение списка товаров (name_filter - поиск товаров по названию)
-export const getProducts = async (name_filter = '') => {
+export const getProducts = async (name_filter = '', offset = 0) => {
   try {
-    const response = await apiClient.get(`${PRODUCTS_LIST_URL}?name=${name_filter}`);
+    const response = await apiClient.get(`${PRODUCTS_LIST_URL}?name=${name_filter}&offset=${offset}`);
+    return getResponseDataSuccess(response);
+  } catch (error) {
+    return getResponseDataFailed(error);
+  }
+}
+
+// Получение списка доступных товаров (name_filter - поиск товаров по названию)
+export const getAvailableProducts = async (name_filter = '') => {
+  try {
+    const response = await apiClient.get(`${PRODUCTS_AVAILABLE_LIST_URL}?name=${name_filter}`);
     return getResponseDataSuccess(response);
   } catch (error) {
     return getResponseDataFailed(error);

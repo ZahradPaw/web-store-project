@@ -9,5 +9,6 @@ router = routers.DefaultRouter()
 router.register('', views.ProductViewSet)
 
 urlpatterns = [
+    path('available/', views.ProductsAvailableListView.as_view(), name="available"),
     path('', include(router.urls)),
 ]
