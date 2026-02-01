@@ -137,10 +137,11 @@ export const register = async (userData) => {
 }
 
 // Получение списка пользователей 
-export const getUsers = async (name_filter = '', role = '') => {
+export const getUsers = async (name_filter = '', role = '', offset = 0, limit = 0) => {
   try {
-    const response = role ? await apiClient.get(`${USERS_LIST_URL}?name=${name_filter}&role=${role}`) : 
-      await apiClient.get(`${USERS_LIST_URL}?name=${name_filter}`);
+    const response = role ? await apiClient.get(
+      `${USERS_LIST_URL}?name=${name_filter}&role=${role}&offset=${offset}&limit=${limit}`) : 
+      await apiClient.get(`${USERS_LIST_URL}?name=${name_filter}&offset=${offset}&limit=${limit}`);
     return getResponseDataSuccess(response);
   } catch (error) {
     return getResponseDataFailed(error);
@@ -148,9 +149,10 @@ export const getUsers = async (name_filter = '', role = '') => {
 }
 
 // Получение списка сотрудников 
-export const getStaff = async (name_filter = '') => {
+export const getStaff = async (name_filter = '', offset = 0) => {
   try {
-    const response = await apiClient.get(`${STAFF_LIST_URL}?name=${name_filter}`);
+    const response = await apiClient.get(
+      `${STAFF_LIST_URL}?name=${name_filter}&offset=${offset}`);
     return getResponseDataSuccess(response);
   } catch (error) {
     return getResponseDataFailed(error);
@@ -199,9 +201,10 @@ export const deleteUser = async (userID) => {
 }
 
 // Получение списка товаров (name_filter - поиск товаров по названию)
-export const getProducts = async (name_filter = '', offset = 0) => {
+export const getProducts = async (name_filter = '', offset = 0, limit = 0) => {
   try {
-    const response = await apiClient.get(`${PRODUCTS_LIST_URL}?name=${name_filter}&offset=${offset}`);
+    const response = await apiClient.get(
+      `${PRODUCTS_LIST_URL}?name=${name_filter}&offset=${offset}&limit=${limit}`);
     return getResponseDataSuccess(response);
   } catch (error) {
     return getResponseDataFailed(error);
@@ -209,9 +212,10 @@ export const getProducts = async (name_filter = '', offset = 0) => {
 }
 
 // Получение списка доступных товаров (name_filter - поиск товаров по названию)
-export const getAvailableProducts = async (name_filter = '') => {
+export const getAvailableProducts = async (name_filter = '', offset = 0) => {
   try {
-    const response = await apiClient.get(`${PRODUCTS_AVAILABLE_LIST_URL}?name=${name_filter}`);
+    const response = await apiClient.get(
+      `${PRODUCTS_AVAILABLE_LIST_URL}?name=${name_filter}&offset=${offset}`);
     return getResponseDataSuccess(response);
   } catch (error) {
     return getResponseDataFailed(error);
@@ -259,19 +263,10 @@ export const deleteProduct = async (productId) => {
 }
 
 // Получение списка заказов
-export const getOrders = async (customer_name_filter = '') => {
+export const getOrders = async (customer_name_filter = '', offset = 0, limit = 0) => {
   try {
-    const response = await apiClient.get(`${ORDERS_LIST_URL}?client_name=${customer_name_filter}`);
-    return getResponseDataSuccess(response);
-  } catch (error) {
-    return getResponseDataFailed(error);
-  }
-}
-
-// Получение заказа
-export const getOrder = async (orderID) => {
-  try {
-    const response = await apiClient.get(`${ORDERS_LIST_URL}${orderID}/`);
+    const response = await apiClient.get(
+      `${ORDERS_LIST_URL}?client_name=${customer_name_filter}&offset=${offset}&limit=${limit}`);
     return getResponseDataSuccess(response);
   } catch (error) {
     return getResponseDataFailed(error);
@@ -279,9 +274,20 @@ export const getOrder = async (orderID) => {
 }
 
 // Получение заказов по ID клиента
-export const getCustomerOrders = async (customerID) => {
+export const getCustomerOrders = async (customerID, offset = 0, limit = 0) => {
   try {
-    const response = await apiClient.get(`${ORDERS_LIST_URL}?client_id=${customerID}`);
+    const response = await apiClient.get(
+      `${ORDERS_LIST_URL}?client_id=${customerID}&offset=${offset}&limit=${limit}`);
+    return getResponseDataSuccess(response);
+  } catch (error) {
+    return getResponseDataFailed(error);
+  }
+}
+
+// Получение заказа по его ID
+export const getOrder = async (orderID) => {
+  try {
+    const response = await apiClient.get(`${ORDERS_LIST_URL}${orderID}/`);
     return getResponseDataSuccess(response);
   } catch (error) {
     return getResponseDataFailed(error);

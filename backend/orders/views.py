@@ -24,7 +24,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             client_name = self.request.query_params.get('client_name')
 
             if client_name:
-                return Order.objects.filter(client__first_name=client_name).prefetch_related(
+                return Order.objects.filter(client__first_name__icontains=client_name).prefetch_related(
                     'items', 'items__product').order_by('-pk')
             if client_id is None:
                 return Order.objects.all().prefetch_related(

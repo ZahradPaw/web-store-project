@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getUsers, deleteUser } from '../../endpoints/api';
 import ErrorRetryComponent from '../ErrorRetryComponent';
@@ -11,30 +11,52 @@ import './Customers.css';
 // Компонент списка клиентов
 const CustomerList = () => {
   const [customers, setCustomers] = useState([]);
-  const [customers_filter, setCustomersFilter] = useState('');
+  const [filter, setFilter] = useState('');
+  const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [offset, setOffset] = useState(0); 
   const [error, setError] = useState('');
   const [is_show_form, setShowForm] = useState(false);
   const navigate = useNavigate();
+  const isMountedRef = useRef(false);
 
   useEffect(() => {
-    loadCustomers();
-  }, [customers_filter]);
+    if (isMountedRef.current) return;
+    isMountedRef.current = true;
+    reloadCustomers();
+  }, [filter]);
 
   // Загрузка клиентов по API
-  const loadCustomers = async () => {
-    setLoading(true);
-    setError('');
+  const loadCustomers = async (offset = 0, reset = false) => {
+    if (reset) setLoading(true);
+    else setLoadingMore(true);
+    setOffset(offset);
+    setError(''); 
 
-    const result = await getUsers(customers_filter, 'client');
+    const result = await getUsers(filter, 'client', offset);
     
     if (result.success) {
-      setCustomers(result.data.results);
+      setCustomers(prev => [...prev, ...result.data.results]);
+      setCount(result.data.count);
+      if (result.data.next) {
+        setHasMore(true);
+        setOffset(value => value + result.data.results.length);
+      }
+      else setHasMore(false);
     }
-    else 
-      setError(result.error);
+    else setError(result.error);
+
     setLoading(false);
+    setLoadingMore(false);
   };
+
+  // Перезагрузка всех покупателей
+  const reloadCustomers = async () => {
+    setCustomers([]);
+    await loadCustomers(0, true);
+  }
 
   // Отображение формы добавления покупателя
   const handleAddCustomer = () => {
@@ -60,8 +82,7 @@ const CustomerList = () => {
     const result = await deleteUser(customer.id);
 
     if (result.success) {
-      // Перезагрузка покупателей
-      loadCustomers();
+      await reloadCustomers();
     }
     else {
       setError(result.error);
@@ -72,12 +93,13 @@ const CustomerList = () => {
   // Обновление каталога при добавлении покупателя через форму 
   const handleSubmit = async () => {
     setShowForm(false);
-    loadCustomers();
+    await reloadCustomers();
   }
 
   // Фильтр поиска покупателей по имени
   const onSearch = (filter) => {
-    setCustomersFilter(filter); 
+    isMountedRef.current = false;
+    setFilter(filter); 
   }
 
   const loadingContent = (
@@ -166,6 +188,20 @@ const CustomerList = () => {
           </div>
         </div>
       )}
+      {loadingMore && (
+        <LoadingComponent text={'Загрузка покупателей...'} />
+      )}
+
+      {!loading && !loadingMore && hasMore && (
+        <div className="text-center my-4">
+          <button 
+            className="btn btn-primary"
+            onClick={() => loadCustomers(offset)}
+          >
+            Загрузить еще
+          </button>
+        </div>
+      )}
     </div>
   );
 
@@ -175,7 +211,7 @@ const CustomerList = () => {
         <div>
           <h2 className="page-title">Покупатели</h2>
           <p className="text-muted">
-            Найдено покупателей: {customers.length}
+            Найдено покупателей: {count}
           </p>
         </div>
         {!is_show_form &&
@@ -198,7 +234,7 @@ const CustomerList = () => {
 
       {loading ? (loadingContent) : (
         error ? (errorContent) : (
-          (customers_filter && customers.length === 0) ? 
+          (filter && customers.length === 0) ? 
             (notCustomersFoundContent) : (customersListContent)
         )
       )}

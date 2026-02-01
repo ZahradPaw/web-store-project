@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { formatJsonToString } from "../utils/utils";
 
 // Компонент отображения текста ошибки
 const ErrorComponent = ({ error }) => {
@@ -11,7 +12,7 @@ const ErrorComponent = ({ error }) => {
   // Обновление текста ошибки
   const updateErrorText = () => {
     if (typeof(error) == 'object') {
-      setErrorMsg(JSON.stringify(error));
+      setErrorMsg(formatJsonToString(error));
     }
     else {
       setErrorMsg(error); 

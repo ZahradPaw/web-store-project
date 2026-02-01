@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getOrders } from '../../endpoints/api';
 import LoadingComponent from '../LoadingComponent';
@@ -12,30 +12,54 @@ import './Orders.css';
 // Компонент списка заказов для продавца
 const OrdersManagerList = () => {
   const [orders, setOrders] = useState([]);
-  const [customers_filter, setCustomersFilter] = useState('');
+  const [filter, setFilter] = useState('');
+  const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [offset, setOffset] = useState(0); 
   const [error, setError] = useState('');
   const [expandedOrders, setExpandedOrders] = useState(new Set());
   const navigate = useNavigate();
+  const isMountedRef = useRef(false);
+  
 
   useEffect(() => {
-    loadOrders();
-  }, [customers_filter]);
+    if (isMountedRef.current) return;
+    isMountedRef.current = true;
+    reloadOrders();
+  }, [filter]);
 
   // Загрузка заказов
-  const loadOrders = async () => {
-    setLoading(true);
-    setError('');
+  const loadOrders = async (offset = 0, reset = false) => {
+    if (reset) setLoading(true);
+    else setLoadingMore(true);
+    setOffset(offset);
+    setError(''); 
 
-    const result = await getOrders(customers_filter);
+    const result = await getOrders(filter, offset);
     
     if (result.success) {
-      setOrders(result.data.results);
+      setOrders(prev => [...prev, ...result.data.results]);
+      setCount(result.data.count);
+      if (result.data.next) {
+        setHasMore(true);
+        setOffset(value => value + result.data.results.length);
+      }
+      else setHasMore(false);
     }
     else 
       setError(result.error);
+
     setLoading(false);
+    setLoadingMore(false);
   };
+
+  // Перезагрузка всех товаров
+  const reloadOrders = async () => {
+    setOrders([]);
+    await loadOrders(0, true);
+  }
 
   // Перенаправление на страницу выбранного заказа
   const handleOrderSelect = (order) => {
@@ -44,7 +68,8 @@ const OrdersManagerList = () => {
 
   // Фильтр поиска заказов по имени клиента
   const onSearch = (filter) => {
-    setCustomersFilter(filter); 
+    isMountedRef.current = false;
+    setFilter(filter); 
   }
 
   // Развернуть/свернуть товары в заказе
@@ -205,6 +230,21 @@ const OrdersManagerList = () => {
           </div>
         </div>
       )}
+
+      {loadingMore && (
+        <LoadingComponent text={'Загрузка заказов...'} />
+      )}
+
+      {!loading && !loadingMore && hasMore && (
+        <div className="text-center my-4">
+          <button 
+            className="btn btn-primary"
+            onClick={() => loadOrders(offset)}
+          >
+            Загрузить еще
+          </button>
+        </div>
+      )}
     </div>
   );
 
@@ -214,7 +254,7 @@ const OrdersManagerList = () => {
         <div>
           <h2 className="page-title">Заказы</h2>
           <p className="text-muted">
-            Найдено заказов: {orders.length}
+            Найдено заказов: {count}
           </p>
         </div>
       </div>
@@ -223,7 +263,7 @@ const OrdersManagerList = () => {
 
       {loading ? (loadingContent) : (
         error ? (errorContent) : (
-          (customers_filter && orders.length === 0) ? 
+          (filter && orders.length === 0) ? 
             (notOrdersFoundContent) : (ordersistContent)
         )
       )}

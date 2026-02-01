@@ -5,6 +5,7 @@ import ErrorRetryComponent from '../ErrorRetryComponent';
 import SearchBar from '../SearchBar';
 import { getUnitDisplay } from '../../utils/product';
 import { getStatusDisplay, getStatusBadge } from '../../utils/order';
+import { ROLES } from '../../utils/user';
 import { formatDate, formatDateTime } from '../../utils/utils';
 import './Report.css';
 
@@ -44,7 +45,8 @@ const ReportComponent = () => {
       price: true,
       unit: true,
       quantity: true,
-      description: true
+      description: true,
+      is_available: true
     },
     customers: {
       username: true,
@@ -81,36 +83,51 @@ const ReportComponent = () => {
   // Загрузка данных всех таблиц
   const loadAllData = async () => {
 
-    // Загрузка товаров
+    // Загрузка сразу всех товаров
     const productsResult = await getProducts();
+    let productsAllResult;
     if (productsResult.success) {
-      setProducts(productsResult.data.results || productsResult.data);
-      setFilteredProducts(productsResult.data.results || productsResult.data);
+      productsAllResult = await getProducts('', 0, productsResult.data.count);
+    }
+
+    if (productsResult.success && productsAllResult?.success) {
+      setProducts(productsAllResult.data.results || productsAllResult.data);
+      setFilteredProducts(productsAllResult.data.results || productsAllResult.data);
     }
     else {
-      setError(prev => ({ ...prev, products: productsResult.error }));
+      setError(prev => ({ ...prev, products: productsResult.error || productsAllResult.error }));
     }
     setLoading(prev => ({ ...prev, products: false }));
 
-    // Загрузка пользователей 
-    const customersResult = await getUsers('', 'client');
+    // Загрузка сразу всех пользователей 
+    const customersResult = await getUsers('', ROLES.CLIENT);
+    let customersAllResult;
     if (customersResult.success) {
-      setCustomers(customersResult.data.results || customersResult.data);
-      setFilteredCustomers(customersResult.data.results || customersResult.data);
+      customersAllResult = await getUsers('', ROLES.CLIENT, 0, customersResult.data.count);
+    }
+
+    if (customersResult.success && customersAllResult?.success) {
+      setCustomers(customersAllResult.data.results || customersAllResult.data);
+      setFilteredCustomers(customersAllResult.data.results || customersAllResult.data);
     }
     else {
-      setError(prev => ({ ...prev, customers: customersResult.error }));
+      setError(prev => ({ ...prev, customers: customersResult.error || customersAllResult.error }));
     }
     setLoading(prev => ({ ...prev, customers: false }));
 
-    // Загрузка заказов 
+    // Загрузка срвзу всех заказов 
     const ordersResult = await getOrders();
+    let ordersAllResult;
     if (ordersResult.success) {
-      setOrders(ordersResult.data.results || ordersResult.data);
-      setFilteredOrders(ordersResult.data.results || ordersResult.data);
+      ordersAllResult = await getOrders('', 0, ordersResult.data.count);
+    }
+
+    if (ordersResult.success && ordersAllResult?.success) {
+      setOrders(ordersAllResult.data.results || ordersAllResult.data);
+      setFilteredOrders(ordersAllResult.data.results || ordersAllResult.data);
     }
     else {
-      setError(prev => ({ ...prev, orders: ordersResult.error }));
+      setError(prev => ({ ...prev, orders: ordersResult.error || ordersAllResult.error }));
     }
     setLoading(prev => ({ ...prev, orders: false }));
   };
@@ -257,6 +274,7 @@ const ReportComponent = () => {
         { key: 'unit', label: 'Ед. изм.', width: '100px' },
         { key: 'quantity', label: 'Количество', width: '120px' },
         { key: 'description', label: 'Описание', width: '250px' },
+        { key: 'is_available', label: 'Доступен', width: '100px' },
       ],
       customers: [
         { key: 'username', label: 'Логин', width: '150px' },

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getStaff, deleteUser } from '../../endpoints/api';
 import StaffForm from './StaffForm';
@@ -11,30 +11,52 @@ import './Staff.css';
 // Компонент списка сотрудников
 const StaffList = () => {
   const [staff, setStaff] = useState([]);
-  const [staff_filter, setStaffFilter] = useState('');
+  const [filter, setFilter] = useState('');
+  const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [offset, setOffset] = useState(0); 
   const [error, setError] = useState('');
   const [is_show_form, setShowForm] = useState(false);
   const navigate = useNavigate();
+  const isMountedRef = useRef(false);
 
   useEffect(() => {
-    loadStaff();
-  }, [staff_filter]);
+    if (isMountedRef.current) return;
+    isMountedRef.current = true;
+    reloadStaff();
+  }, [filter]);
 
   // Загрузка сотрудников по API
-  const loadStaff = async () => {
-    setLoading(true);
-    setError('');
+  const loadStaff = async (offset = 0, reset = false) => {
+    if (reset) setLoading(true);
+    else setLoadingMore(true);
+    setOffset(offset);
+    setError(''); 
 
-    const result = await getStaff(staff_filter);
+    const result = await getStaff(filter, offset);
     
     if (result.success) {
-      setStaff(result.data.results);
+      setStaff(prev => [...prev, ...result.data.results]);
+      setCount(result.data.count);
+      if (result.data.next) {
+        setHasMore(true);
+        setOffset(value => value + result.data.results.length);
+      }
+      else setHasMore(false);
     }
-    else 
-      setError(result.error);
+    else setError(result.error);
+
     setLoading(false);
+    setLoadingMore(false); 
   };
+
+  // Перезагрузка всех сотрудников
+  const reloadStaff = async () => {
+    setStaff([]);
+    await loadStaff(0, true);
+  }
 
   // Отображение формы добавления покупателя
   const handleAddStaff = () => {
@@ -61,8 +83,7 @@ const StaffList = () => {
     const result = await deleteUser(staff.id);
 
     if (result.success) {
-      // Перезагрузка покупателей
-      loadStaff();
+      await reloadStaff(); 
     }
     else {
       setError(result.error);
@@ -78,7 +99,8 @@ const StaffList = () => {
 
   // Фильтр поиска сотрудников по имени
   const onSearch = (filter) => {
-    setStaffFilter(filter); 
+    isMountedRef.current = false;
+    setFilter(filter); 
   }
 
   const loadingContent = (
@@ -173,6 +195,21 @@ const StaffList = () => {
           </div>
         </div>
       )}
+
+      {loadingMore && (
+        <LoadingComponent text={'Загрузка сотрудников...'} />
+      )}
+
+      {!loading && !loadingMore && hasMore && (
+        <div className="text-center my-4">
+          <button 
+            className="btn btn-primary"
+            onClick={() => loadStaff(offset)}
+          >
+            Загрузить еще
+          </button>
+        </div>
+      )}
     </div>
   );
 
@@ -182,7 +219,7 @@ const StaffList = () => {
         <div>
           <h2 className="page-title">Сотрудники</h2>
           <p className="text-muted">
-            Найдено сотрудников: {staff.length}
+            Найдено сотрудников: {count}
           </p>
         </div>
         {!is_show_form &&
@@ -205,7 +242,7 @@ const StaffList = () => {
 
       {loading ? (loadingContent) : (
         error ? (errorContent) : (
-          (staff_filter && staff.length === 0) ? 
+          (filter && staff.length === 0) ? 
             (notStaffFoundContent) : (staffListContent)
         )
       )}

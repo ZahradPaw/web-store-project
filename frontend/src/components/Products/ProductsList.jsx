@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getProducts, deleteProduct, updateProduct } from '../../endpoints/api';
 import ErrorRetryComponent from '../ErrorRetryComponent';
@@ -11,29 +11,52 @@ import './Products.css';
 // Компонент списка товаров для управления ими
 const ProductsList = () => {
   const [products, setProducts] = useState([]);
-  const [products_filter, setProductsFilter] = useState('');
+  const [filter, setFilter] = useState('');
+  const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [offset, setOffset] = useState(0); 
   const [error, setError] = useState('');
   const [is_show_form, setShowForm] = useState(false);
   const navigate = useNavigate();
-
+  const isMountedRef = useRef(false);
+  
   useEffect(() => {
-    loadProducts();
-  }, [products_filter]);
+    if (isMountedRef.current) return;
+    isMountedRef.current = true;
+    reloadProducts();
+  }, [filter]);
 
   // Загрузка товаров по API
-  const loadProducts = async () => {
-    setLoading(true);
+  const loadProducts = async (offset = 0, reset = false) => {
+    if (reset) setLoading(true);
+    else setLoadingMore(true);
+    setOffset(offset);
     setError(''); 
+    
+    const result = await getProducts(filter, offset);
 
-    const result = await getProducts(products_filter);
-
-    if (result.success)
-      setProducts(result.data.results);
-    else
-      setError(result.error);
+    if (result.success) {
+      setProducts(prev => [...prev, ...result.data.results]);
+      setCount(result.data.count);
+      if (result.data.next) {
+        setHasMore(true);
+        setOffset(value => value + result.data.results.length);
+      }
+      else setHasMore(false);
+    }
+    else setError(result.error);
+    
     setLoading(false);
+    setLoadingMore(false);
   };
+
+  // Перезагрузка всех товаров
+  const reloadProducts = async () => {
+    setProducts([]);
+    await loadProducts(0, true);
+  }
 
   // Появление формы добавления товара
   const handleAddProduct = () => {
@@ -59,7 +82,7 @@ const ProductsList = () => {
     const result = await deleteProduct(product.id);
 
     if (result.success) {
-      loadProducts();
+      await reloadProducts();
     }
     else {
       setError(result.error);
@@ -77,7 +100,7 @@ const ProductsList = () => {
     });
 
     if (result.success) {
-      loadProducts();
+      await reloadProducts();
     }
     else {
       setError(result.error);
@@ -88,12 +111,13 @@ const ProductsList = () => {
   // Обновление каталога при добавлении товара через форму 
   const handleSubmit = async () => {
     setShowForm(false);
-    loadProducts();
+    await reloadProducts();
   }
 
   // Фильтр поиска товаров по названию
   const onSearch = (filter) => {
-    setProductsFilter(filter); 
+    isMountedRef.current = false;
+    setFilter(filter); 
   }
 
   const loadingContent = (
@@ -195,6 +219,20 @@ const ProductsList = () => {
           </div>
         </div>
       )}
+      {loadingMore && (
+        <LoadingComponent text={'Загрузка товаров...'} />
+      )}
+
+      {!loading && !loadingMore && hasMore && (
+        <div className="text-center my-4">
+          <button 
+            className="btn btn-primary"
+            onClick={() => loadProducts(offset)}
+          >
+            Загрузить еще
+          </button>
+        </div>
+      )}
     </div>
   );
 
@@ -204,7 +242,7 @@ const ProductsList = () => {
         <div>
           <h2 className="page-title">Товары</h2>
           <p className="text-muted">
-            Найдено товаров: {products.length}
+            Найдено товаров: {count}
           </p>
         </div>
         {!is_show_form &&
@@ -227,7 +265,7 @@ const ProductsList = () => {
 
       {loading ? (loadingContent) : (
         error ? (errorContent) : (
-          (products_filter && products.length === 0) ? 
+          (filter && products.length === 0) ? 
             (notProductFoundContent) : (productListContent)
         )
       )}

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import LoadingComponent from '../LoadingComponent';
 import ErrorComponent from '../ErrorComponent';
 import { getCustomerOrders } from '../../endpoints/api';
 import { getStatusDisplay, getStatusBadge } from '../../utils/order';
@@ -9,28 +10,44 @@ import './Customers.css';
 // Компонент карточки клиента с информацией о нем и заказами
 const CustomerDetail = ({ customer }) => {
   const [orders, setOrders] = useState([]);
+  const [orders_count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [offset, setOffset] = useState(0); 
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const isMountedRef = useRef(false);
 
   useEffect(() => {
-    loadCustomerOrders();
+    if (isMountedRef.current) return;
+    isMountedRef.current = true;
+    setOrders([]);
+    loadCustomerOrders(0, true); 
   }, [customer.id]);
 
   // Загрузка заказов клиента
-  const loadCustomerOrders = async () => {
-    setLoading(true);
-    setError('');
+  const loadCustomerOrders = async (offset = 0, reset = false) => {
+    if (reset) setLoading(true);
+    else setLoadingMore(true);
+    setOffset(offset);
+    setError(''); 
     
-    const result = await getCustomerOrders(customer.id);
+    const result = await getCustomerOrders(customer.id, offset);
 
     if (result.success) {
-      setOrders(result.data.results);
+      setOrders(prev => [...prev, ...result.data.results]);
+      setCount(result.data.count);
+      if (result.data.next) {
+        setHasMore(true);
+        setOffset(value => value + result.data.results.length);
+      }
+      else setHasMore(false);
     }
-    else {
-      setError(result.error);
-    }
+    else setError(result.error);
+    
     setLoading(false);
+    setLoadingMore(false); 
   };
 
   // Перенаправление на страницу выбранного заказа
@@ -88,7 +105,7 @@ const CustomerDetail = ({ customer }) => {
                 </div>
                 <div className="info-item">
                   <span className="label">Всего заказов: </span>
-                  <span className="value">{orders.length}</span>
+                  <span className="value">{orders_count}</span>
                 </div>
               </div>
             </div>
@@ -135,6 +152,20 @@ const CustomerDetail = ({ customer }) => {
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+          {loadingMore && (
+            <LoadingComponent text={'Загрузка заказов...'} />
+          )}
+
+          {!loading && !loadingMore && hasMore && (
+            <div className="text-center my-4">
+              <button 
+                className="btn btn-primary"
+                onClick={() => loadCustomerOrders(offset)}
+              >
+                Загрузить еще
+              </button>
             </div>
           )}
         </div>

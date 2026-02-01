@@ -15,6 +15,7 @@ import './Orders.css';
 const OrderCreateCard = ({ onSubmit }) => {
   const [customers, setCustomers] = useState([]);
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [selectedCustomerID, setSelectedCustomerID] = useState('');
   const [customerOrders, setCustomerOrders] = useState([]);
   const [cart, setCart] = useState([]);
@@ -30,25 +31,37 @@ const OrderCreateCard = ({ onSubmit }) => {
     loadCustomerOrders();
   }, [selectedCustomerID]);
 
-  // Загрузка клиентов и товаров
+  // Загрузка сразу всех клиентов и товаров
   const loadData = async () => {
     setLoading(true);
     setError('');
 
     const resultUsers = await getUsers('', ROLES.CLIENT);
-    const resultProducts = await getProducts();
+    let resultAllUsers;
+    if (resultUsers.success) {
+      resultAllUsers = await getUsers('', ROLES.CLIENT, 0, resultUsers.data.count);
+    }
 
-    if (resultUsers.success && resultProducts.success) {
-      setCustomers(resultUsers.data.results);
-      setProducts(resultProducts.data.results);
+    const resultProducts = await getProducts();
+    let resultAllProducts;
+    if (resultProducts.success) {
+      resultAllProducts = await getProducts('', 0, resultProducts.data.count);
+    }
+
+    if (resultUsers.success && resultProducts.success && 
+      resultAllProducts?.success && resultAllUsers?.success) {
+      setCustomers(resultAllUsers.data.results);
+      setProducts(resultAllProducts.data.results);
+      setFilteredProducts(resultAllProducts.data.results);
     }
     else {
-      setError(resultUsers.error + '\n' + resultProducts.error);
+      setError((resultUsers.error || resultAllUsers.error) + '\n' + (
+        resultProducts.error || resultAllProducts.error));
     }
     setLoading(false);
   };
 
-  // Загрузка заказов выбранного покупателя
+  // Загрузка сразу всех заказов выбранного покупателя
   const loadCustomerOrders = async () => {
     if (!selectedCustomerID) return;
 
@@ -56,12 +69,16 @@ const OrderCreateCard = ({ onSubmit }) => {
     setError('');
     
     const result = await getCustomerOrders(selectedCustomerID);
-
+    let resultAll;
     if (result.success) {
-      setCustomerOrders(result.data.results);
+      resultAll = await getCustomerOrders(selectedCustomerID, 0, result.data.count);
+    }
+
+    if (result.success && resultAll?.success) {
+      setCustomerOrders(resultAll.data.results);
     }
     else {
-      setError(result.error);
+      setError(result.error || resultAll.error);
     }
     setLoading(false);
   };
@@ -145,6 +162,21 @@ const OrderCreateCard = ({ onSubmit }) => {
     }, 0);
   };
 
+  // Поиск товаров
+  const onSearch = (filter) => {
+    let filteredProds = [...products];
+    if (filter) {
+      const term = filter.toLowerCase();
+      filteredProds = filteredProds.filter(p =>
+        p.name.toLowerCase().includes(term)
+      );
+      setFilteredProducts(filteredProds);
+    }
+    else {
+      setFilteredProducts(products);
+    }
+  }
+
   // Контент при загрузке
   if (loading) {
    return (
@@ -174,6 +206,7 @@ const OrderCreateCard = ({ onSubmit }) => {
                   className="form-select"
                   value={selectedCustomerID}
                   onChange={(e) => setSelectedCustomerID(e.target.value)}
+                  size='1'
                 >
                   <option value="">Выберите покупателя</option>
                   {customers.map(customer => (
@@ -185,9 +218,9 @@ const OrderCreateCard = ({ onSubmit }) => {
               </div>
 
               <h6>Доступные товары</h6>
-              <SearchBar placeholder='Поиск товаров...' />
+              <SearchBar placeholder='Поиск товаров...' onSearch={onSearch} />
               <div className="products-list">
-                {products.map(product => (
+                {filteredProducts.map(product => (
                   <div key={product.id} className="product-item card mb-2">
                     <div className="card-body">
                       <div className="row align-items-center">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProductCard from './ProductCard';
 import LoadingComponent from '../LoadingComponent';
@@ -17,34 +17,52 @@ const VIEW_MODES = {
 // Компонент каталога товаров для покупателей
 const ProductsCatalog = ({ onAddToCart }) => {
   const [products, setProducts] = useState([]);
-  const [products_filter, setProductsFilter] = useState('');
+  const [filter, setFilter] = useState('');
+  const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [offset, setOffset] = useState(0); 
   const [error, setError] = useState('');
   const [viewMode, setViewMode] = useState(localStorage.getItem('catalog_view') || VIEW_MODES.CARDS); 
   const navigate = useNavigate();
+  const isMountedRef = useRef(false);
 
   useEffect(() => {
-    loadProducts();
-  }, [products_filter]);
+    if (isMountedRef.current) return;
+    isMountedRef.current = true;
+    setProducts([]);
+    loadProducts(0, true);
+  }, [filter]);
 
   // Загрузка товаров по API
-  const loadProducts = async () => {
-    setLoading(true);
+  const loadProducts = async (offset = 0, reset = false) => {
+    if (reset) setLoading(true);
+    else setLoadingMore(true);
+    setOffset(offset);
     setError(''); 
     
-    const result = await getAvailableProducts(products_filter);
+    const result = await getAvailableProducts(filter, offset);
 
     if (result.success) {
-      setProducts(result.data.results);
+      setProducts(prev => [...prev, ...result.data.results]);
+      setCount(result.data.count);
+      if (result.data.next) {
+        setHasMore(true);
+        setOffset(value => value + result.data.results.length);
+      }
+      else setHasMore(false);
     }
-    else
-      setError(result.error);
+    else setError(result.error);
+    
     setLoading(false);
+    setLoadingMore(false);
   };
 
   // Фильтр поиска продуктов по названию
   const onSearch = (filter) => {
-    setProductsFilter(filter); 
+    isMountedRef.current = false;
+    setFilter(filter); 
   }
 
   // Переключение вида отображения
@@ -163,6 +181,20 @@ const ProductsCatalog = ({ onAddToCart }) => {
       {products.length === 0 ? emptyContent : (
         viewMode === VIEW_MODES.CARDS ? cardViewContent : tableViewContent
       )}
+      {loadingMore && (
+        <LoadingComponent text={'Загрузка товаров...'} />
+      )}
+
+      {!loading && !loadingMore && hasMore && (
+        <div className="text-center my-4">
+          <button 
+            className="btn btn-primary"
+            onClick={() => loadProducts(offset)}
+          >
+            Загрузить еще
+          </button>
+        </div>
+      )}
     </div>
   );
 
@@ -172,7 +204,7 @@ const ProductsCatalog = ({ onAddToCart }) => {
         <div className="col">
           <h2 className='page-title'>Каталог товаров</h2>
           <p className="text-muted">
-            Найдено товаров: {products.length}
+            Найдено товаров: {count}
           </p>
         </div>
       </div>
