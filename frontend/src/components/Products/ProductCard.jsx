@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import slugify from 'slugify';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { UNITS, getUnitDisplay } from '../../utils/product';
 import './Products.css';
@@ -33,7 +34,7 @@ const ProductCard = ({ product, onAddToCart }) => {
 
   // Перенаправление на страницу товара при нажатии на карточку
   const handleProductClick = () => {
-    navigate(`/product/${product.id}`);
+    navigate(`/product/${product.id}/${slugify(product.name, {lower: true})}`);
   };
 
   return (

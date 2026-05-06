@@ -11,7 +11,7 @@ const ProductDetail = ({ product }) => {
   const { isAuthenticated } = useAuthContext();
   const { addToCart } = useCartContext();
   const navigate = useNavigate();
-
+  
   // Добавление товара в корзину
   const handleAddToCart = () => {
     if (!isAuthenticated) {
@@ -26,7 +26,7 @@ const ProductDetail = ({ product }) => {
 
   return (
     <div className="product-page">
-      <div className="product-container">
+      <div className="row g-4">
         <div className="product-image-section">
           <div className="product-main-image">
             {product.photo ? (
@@ -62,7 +62,6 @@ const ProductDetail = ({ product }) => {
                 </div>
               )
             }
-            
           </div>
 
           {product.is_available ? (

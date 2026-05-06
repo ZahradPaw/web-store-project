@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import slugify from 'slugify';
 import ProductCard from './ProductCard';
 import LoadingComponent from '../LoadingComponent';
 import ErrorRetryComponent from '../ErrorRetryComponent';
@@ -27,6 +28,7 @@ const ProductsCatalog = ({ onAddToCart }) => {
   const [viewMode, setViewMode] = useState(localStorage.getItem('catalog_view') || VIEW_MODES.CARDS); 
   const navigate = useNavigate();
   const isMountedRef = useRef(false);
+  
 
   useEffect(() => {
     if (isMountedRef.current) return;
@@ -117,7 +119,7 @@ const ProductsCatalog = ({ onAddToCart }) => {
           {products.map(product => (
             <tr key={product.id} 
               className="product-table-row"
-              onClick={() => navigate(`/product/${product.id}`)}
+              onClick={() => navigate(`/product/${product.id}/${slugify(product.name, {lower: true})}`)}
             >
               <td>
                 <div className="product-table-name">

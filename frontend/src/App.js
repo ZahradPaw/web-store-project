@@ -42,7 +42,7 @@ const AppContent = () => {
             <Route path="/" element={<ProductsCatalogPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
-            <Route path="/product/:id" element={<ProductDetailPage />} />
+            <Route path="/product/:id/:slug" element={<ProductDetailPage />} />
 
             {/* Маршруты для всех авторизованных */}
             <Route

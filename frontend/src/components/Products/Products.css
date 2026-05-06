@@ -30,7 +30,9 @@
 
 .product-image img {
   height: 200px;
+  object-fit: contain;
   max-width: 100%;
+  max-height: 100%;
 }
 
 .product-title {
@@ -272,15 +274,13 @@
 }
 
 .product-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
   gap: 40px;
   margin-bottom: 20px;
 }
 
 .product-image-section {
-  position: relative;
-  width: 600px;
+  max-width: 600px;
 }
 
 .product-main-image {
@@ -290,12 +290,13 @@
   overflow: hidden;
   background: #f8f9fa;
   justify-content: center;
+  height: 400px;
 }
 
 .product-main-image img {
-  height: 400px;
+  object-fit: contain;
   max-width: 100%;
-  display: block;
+  max-height: 100%;
   transition: transform 0.3s;
 }
 
@@ -304,7 +305,8 @@
 }
 
 .product-info-section {
-  min-height: 100%;
+  max-width: 500px;
+  min-height: 300px;
   position: relative;
 }
 
