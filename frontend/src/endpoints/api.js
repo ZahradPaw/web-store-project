@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Базовый URL API
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/v1';
+const API_BASE_URL = process.env.REACT_APP_API_URL;
 
 // Эндпоинты JWT токенов
 const TOKEN_URL = '/auth/token/';
@@ -27,11 +27,87 @@ const LOYALTY_SETTINGS_URL = '/loyalty/';
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
-  headers: {
-    'Content-Type': 'multipart/form-data',
-  },
   withCredentials: true
 });
+
+// Рекурсивная функция проверки наличия файлов в объекте
+const hasFiles = (data) => {
+  if (!data) return false;
+  
+  // Проверка на File или FileList
+  if (data instanceof File || data instanceof FileList) return true;
+  
+  // Проверка на FormData
+  if (data instanceof FormData) return true;
+  
+  // Проверка массивов
+  if (Array.isArray(data)) {
+    return data.some(item => hasFiles(item));
+  }
+  
+  // Проверка объектов
+  if (typeof data === 'object') {
+    return Object.values(data).some(value => hasFiles(value));
+  }
+  
+  return false;
+};
+
+// Рекурсивное преобразование объекта в FormData
+const toFormData = (data, formData = new FormData(), parentKey = '') => {
+  if (data instanceof File) {
+    formData.append(parentKey, data);
+  } 
+  else if (data instanceof FileList) {
+    for (let i = 0; i < data.length; i++) {
+      formData.append(`${parentKey}[${i}]`, data[i]);
+    }
+  }
+  else if (Array.isArray(data)) {
+    data.forEach((item, index) => {
+      toFormData(item, formData, `${parentKey}[${index}]`);
+    });
+  }
+  else if (typeof data === 'object' && data !== null) {
+    for (const key in data) {
+      if (data.hasOwnProperty(key)) {
+        const newKey = parentKey ? `${parentKey}[${key}]` : key;
+        toFormData(data[key], formData, newKey);
+      }
+    }
+  }
+  else if (data !== null && data !== undefined) {
+    formData.append(parentKey, String(data));
+  }
+  
+  return formData;
+};
+
+// Интерцептор для определения формата данных запроса
+apiClient.interceptors.request.use(
+  (config) => {
+    // Проверяем, есть ли файлы в данных
+    const containsFiles = hasFiles(config.data);
+    
+    if (containsFiles) {
+      // Если есть файлы, преобразуем в FormData
+      if (!(config.data instanceof FormData)) {
+        config.data = toFormData(config.data);
+      }
+      // Удаляем Content-Type, браузер установит сам с правильным boundary
+      delete config.headers['Content-Type'];
+    } 
+    else if (config.data && typeof config.data === 'object') {
+      // Если нет файлов и это объект - отправляем как JSON
+      config.headers['Content-Type'] = 'application/json';
+    }
+    
+    return config;
+  }, 
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 // Интерцептор для добавления JWT токена к запросам
 apiClient.interceptors.request.use(

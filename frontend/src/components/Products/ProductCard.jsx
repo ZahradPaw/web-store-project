@@ -11,15 +11,6 @@ const ProductCard = ({ product, onAddToCart }) => {
   const { isAuthenticated } = useAuthContext();
   const navigate = useNavigate();
 
-  // Получение URL изображения
-  const getImageUrl = () => {
-    if (!product.photo) return null;
-
-    return `${process.env.REACT_APP_API_URL || ''}${product.photo}`;
-  };
-
-  const imageUrl = getImageUrl();
-
   // Добавление товара в корзину
   const handleAddToCart = () => {
     if (!isAuthenticated) {
@@ -42,7 +33,7 @@ const ProductCard = ({ product, onAddToCart }) => {
       <div className="product-image" onClick={handleProductClick}>
         {product.photo ? (
           <img
-            src={imageUrl}
+            src={product.photo}
             alt={product.name}
             loading="lazy"
           />
