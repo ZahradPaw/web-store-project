@@ -25,7 +25,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # Авторизация по сессиям
-    path('api/v1/auth/', include('rest_framework.urls')),
+    #path('api/v1/auth/', include('rest_framework.urls')),
+    
     # Авторизация через JWT токены
     path('api/v1/auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/v1/auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
