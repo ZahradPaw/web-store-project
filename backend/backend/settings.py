@@ -90,11 +90,11 @@ DATABASES = {
         'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
         'HOST': os.environ.get('DATABASE_HOST'),
         'PORT': os.environ.get('DATABASE_PORT'),
-    },
-    'sqlite': {
-        'ENGINE': 'django.db.backends.sqlite3',  
-        'NAME': BASE_DIR / 'db.sqlite3',  
     }
+    #'default': {
+    #    'ENGINE': 'django.db.backends.sqlite3',  
+    #    'NAME': BASE_DIR / 'db.sqlite3',  
+    #}
 }
 
 
@@ -150,6 +150,18 @@ AUTHENTICATION_BACKENDS = [
     'users.authentication.EmailAuthBackend',
 ]
 
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+EMAIL_HOST = os.environ.get('EMAIL_HOST_URL', '')
+EMAIL_PORT = os.environ.get('EMAIL_PORT', '')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', '0') == '1'
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER  
+SERVER_EMAIL = EMAIL_HOST_USER  
+EMAIL_ADMIN = EMAIL_HOST_USER 
+
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
@@ -174,5 +186,4 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', '').split(',')
-
 CORS_ALLOW_CREDENTIALS = True

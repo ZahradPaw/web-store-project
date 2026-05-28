@@ -41,3 +41,6 @@ htmlcov/
 .env.development
 .env.test
 .env.production
+
+# Другие файлы
+run.bat
