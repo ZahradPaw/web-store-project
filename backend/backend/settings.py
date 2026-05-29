@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'loyalty.apps.LoyaltyConfig',
     'rest_framework',
     'rest_framework_simplejwt',
+    'django_rest_passwordreset',
     'corsheaders',
     'django_cleanup.apps.CleanupConfig',
 ]
@@ -150,7 +151,7 @@ AUTHENTICATION_BACKENDS = [
     'users.authentication.EmailAuthBackend',
 ]
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 EMAIL_HOST = os.environ.get('EMAIL_HOST_URL', '')
 EMAIL_PORT = os.environ.get('EMAIL_PORT', '')
@@ -185,5 +186,16 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
 
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', '').split(',')
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost').split(',')
 CORS_ALLOW_CREDENTIALS = True
+
+DJANGO_REST_PASSWORDRESET_TOKEN_CONFIG = {
+    "CLASS": "django_rest_passwordreset.tokens.RandomStringTokenGenerator",
+    "OPTIONS": {
+        "min_length": 40,
+        "max_length": 50
+    }
+}
+
+DJANGO_REST_MULTITOKENAUTH_RESET_TOKEN_EXPIRY_TIME = 2  
+DJANGO_REST_PASSWORDRESET_NO_INFORMATION_LEAKAGE = True

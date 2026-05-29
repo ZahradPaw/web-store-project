@@ -30,6 +30,10 @@ import StaffListPage from './pages/StaffListPage';
 import StaffEditPage from './pages/StaffEditPage';
 import LoyaltySettingsPage from './pages/LoyaltySettingsPage';
 import ReportPage from './pages/ReportPage';
+import PasswordResetPage from './pages/PasswordResetPage';
+import PasswordResetDonePage from './pages/PasswordResetDonePage';
+import PasswordResetConfirmPage from './pages/PasswordResetConfirmPage';
+import PasswordResetCompletePage from './pages/PasswordResetCompletePage';
 
 const AppContent = () => {
   return (
@@ -43,6 +47,10 @@ const AppContent = () => {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/product/:id/:slug" element={<ProductDetailPage />} />
+            <Route path="/password-reset" element={<PasswordResetPage />} />
+            <Route path="/password-reset/done" element={<PasswordResetDonePage />} />
+            <Route path="/password-reset/confirm/:token" element={<PasswordResetConfirmPage />} />
+            <Route path="/password-reset/complete" element={<PasswordResetCompletePage />} />
 
             {/* Маршруты для всех авторизованных */}
             <Route

@@ -7,6 +7,11 @@ const API_BASE_URL = process.env.REACT_APP_API_URL;
 const TOKEN_URL = '/auth/token/';
 const REFRESH_TOKEN_URL = '/auth/token/refresh/';
 
+// Эндпоинты восстановления пароля
+const PASSWORD_RESET_URL = '/password-reset/';
+const PASSWORD_RESET_CONFIRM_URL = '/password-reset/confirm/';
+const PASSWORD_RESET_VALIDATE_TOKEN_URL = '/password-reset/validate_token/';
+
 // Эндпоинты пользователей
 const REGISTER_URL = '/users/register/';
 const USERS_LIST_URL = '/users/list/';
@@ -434,6 +439,36 @@ export const getLoyaltySettings = async () => {
 export const updateLoyaltySettings = async (settingsData) => {
   try {
     const response = await apiClient.post(LOYALTY_SETTINGS_URL, settingsData);
+    return getResponseDataSuccess(response);
+  } catch (error) {
+    return getResponseDataFailed(error);
+  }
+}
+
+// Запрос на восстановление пароля для получения ссылки
+export const passwordReset = async (credentials) => {
+  try {
+    const response = await apiClient.post(PASSWORD_RESET_URL, credentials);
+    return getResponseDataSuccess(response);
+  } catch (error) {
+    return getResponseDataFailed(error);
+  }
+}
+
+// Установка нового пароля при восстановлении
+export const passwordResetConfirm = async (credentials) => {
+  try {
+    const response = await apiClient.post(PASSWORD_RESET_CONFIRM_URL, credentials);
+    return getResponseDataSuccess(response);
+  } catch (error) {
+    return getResponseDataFailed(error);
+  }
+}
+
+// Проверка токена для восстановления пароля
+export const passwordResetValidateToken = async (credentials) => {
+  try {
+    const response = await apiClient.post(PASSWORD_RESET_VALIDATE_TOKEN_URL, credentials);
     return getResponseDataSuccess(response);
   } catch (error) {
     return getResponseDataFailed(error);

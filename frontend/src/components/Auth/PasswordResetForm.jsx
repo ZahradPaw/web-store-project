@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuthContext } from '../../contexts/AuthContext';
 import ErrorComponent from '../ErrorComponent';
+import { passwordReset } from '../../endpoints/api';
 import './Auth.css';
 
-// Компонент формы входа
-const LoginForm = ({ onSuccess }) => {
+// Компонент формы восстановления пароля по почте
+const PasswordResetForm = ({ onSuccess }) => {
   const [credentials, setCredentials] = useState({
-    username: '',
-    password: ''
+    email: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const { userLogin } = useAuthContext();
 
   // Отправка формы входа
   const handleSubmit = async (event) => {
@@ -20,7 +17,7 @@ const LoginForm = ({ onSuccess }) => {
     setLoading(true);
     setError('');
 
-    const result = await userLogin(credentials);
+    const result = await passwordReset(credentials);
 
     if (result.success) {
       onSuccess?.();
@@ -41,40 +38,24 @@ const LoginForm = ({ onSuccess }) => {
 
   return (
     <div className="row justify-content-center">
-      <div className="col-md-6 col-lg-4">
+      <div className="col-md-6 col-lg-5">
         <div className="card shadow">
           <div className="card-body p-4">
-            <h2 className="card-title text-center mb-4">Вход</h2>
+            <h2 className="card-title text-center mb-4">Восстановление пароля</h2>
 
             <ErrorComponent error={error} />
 
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
-                <label htmlFor="username" className="form-label">
-                  Логин
+                <label htmlFor="email" className="form-label">
+                  Адрес электронной почты
                 </label>
                 <input
                   type="text"
                   className="form-control"
-                  id="username"
-                  name="username"
-                  value={credentials.username}
-                  onChange={handleChange}
-                  required
-                  disabled={loading}
-                />
-              </div>
-
-              <div className="mb-4">
-                <label htmlFor="password" className="form-label">
-                  Пароль
-                </label>
-                <input
-                  type="password"
-                  className="form-control"
-                  id="password"
-                  name="password"
-                  value={credentials.password}
+                  id="email"
+                  name="email"
+                  value={credentials.email}
                   onChange={handleChange}
                   required
                   disabled={loading}
@@ -90,20 +71,13 @@ const LoginForm = ({ onSuccess }) => {
                   <div>
                     <span className="spinner-border spinner-border-sm me-2"
                       role="status"></span>
-                    Вход...
+                    Отправка...
                   </div>
                 ) : (
-                  'Войти'
+                  'Отправить'
                 )}
               </button>
             </form>
-
-            <div className="text-center mt-3">
-              <small className="text-muted">
-                <p><Link to="/password-reset">Забыли пароль?</Link></p>
-                <p>Нет аккаунта? <Link to="/register">Зарегестрируйтесь!</Link></p>
-              </small>
-            </div>
           </div>
         </div>
       </div>
@@ -111,4 +85,4 @@ const LoginForm = ({ onSuccess }) => {
   );
 }
 
-export default LoginForm; 
+export default PasswordResetForm; 

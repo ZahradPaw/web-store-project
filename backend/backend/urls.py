@@ -31,6 +31,9 @@ urlpatterns = [
     path('api/v1/auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/v1/auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
+    # Восстановление пароля
+    path('api/v1/password-reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
+
     # Приложения
     path('api/v1/users/', include('users.urls', namespace="users")),
     path('api/v1/products/', include('products.urls', namespace="products")),
